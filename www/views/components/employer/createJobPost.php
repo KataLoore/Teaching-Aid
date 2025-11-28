@@ -1,16 +1,6 @@
 <?php
 /*
 * The createJobPost view processes form data for job post creation.
-* Input data is sanitized, validated and tested for errors. 
-* Additional functionality has been added to improve UX ($jobPostData 
-* ensures only invalid fields are cleared in case of field validation errors)
-*
-* The job post creation process utilises two-layer error handling:
-*   - Layer 1: Handles expected user errors through validator objects
-*   - Layer 2: Handles unexpected system exceptions
-*
-* In both cases, the user gets feedback through $errorMessages, ensuring 
-* that technical details stay hidden in case of system errors. 
 */
 
 if(!isset($_SESSION['user']['loggedIn']) || $_SESSION['user']['loggedIn']!==True)  {
@@ -28,69 +18,53 @@ require_once('../../assets/inc/functions.php');
 require_once('../../assets/lib/validator.php');
 require_once('../../assets/inc/database/db.php');
 require_once('../../assets/inc/database/jobPostSql.php');
-
-
-$errorMessages = [];
-$successMessage = '';
-$jobPostData = []; // Store sanitized form data for repopulation in case of validation errors
+    
+$messages = [];
+$formData = $_POST;
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['createJobPost'])) {
     
-    // Store sanitized form data
-    $jobPostData = [
-        'employerId' => $_SESSION['user']['userId'],
-        'jobTitle' => cleanFormInput($_POST['jobTitle']),
-        'jobDescription' => cleanFormInput($_POST['jobDescription']),
-        'university' => cleanFormInput($_POST['university']),
-        'faculty' => cleanFormInput($_POST['faculty']),
-        'course' => cleanFormInput($_POST['course']),
-        'language' => cleanFormInput($_POST['language']),
-        'maxWorkload' => cleanFormInput($_POST['maxWorkload']),
-        'weeklyWorkload' => cleanFormInput($_POST['weeklyWorkload']),
-        'deadlineDate' => cleanFormInput($_POST['deadlineDate'])
-    ];
-
     $validator = new Validator();
     
-    // Layer 1: Validate sanitized data
-    $validator->validateJobTitle($jobPostData['jobTitle']);
-    $validator->validateJobDescription($jobPostData['jobDescription']);
-    $validator->validateWorkload($jobPostData['maxWorkload'], 'maxWorkload');
-    $validator->validateWorkload($jobPostData['weeklyWorkload'], 'weeklyWorkload');
-    $validator->validateDeadlineDate($jobPostData['deadlineDate']);
-    
-    // Optional field validations (only if provided)
-    if (!empty($jobPostData['university'])) {
-        $validator->validateName($jobPostData['university'], 'university');
-    }
-    if (!empty($jobPostData['faculty'])) {
-        $validator->validateName($jobPostData['faculty'], 'faculty');
-    }
-    if (!empty($jobPostData['course'])) {
-        $validator->validateCourseCode($jobPostData['course']);
-    }
-    
-    $errorMessages = $validator->getErrors();
+    // Validate raw input
+    $validator->validateJobTitle($_POST['jobTitle']);
+    $validator->validateJobDescription($_POST['jobDescription']);
+    $validator->validateWorkload($_POST['maxWorkload'], 'maxWorkload');
+    $validator->validateWorkload($_POST['weeklyWorkload'], 'weeklyWorkload');
+    $validator->validateDeadlineDate($_POST['deadlineDate']);
+    $validator->validateName($_POST['university'], 'university');
+    $validator->validateName($_POST['faculty'], 'faculty');
+    $validator->validateCourseCode($_POST['course']);
     
     if (!$validator->hasErrors()) {
         try {
-            createJobPost($pdo, $jobPostData, $errorMessages); // Save job post to database
+            $jobData = [ // sanitize data
+                'employerId' => $_SESSION['user']['userId'],
+                'jobTitle' => cleanFormInput($_POST['jobTitle']),
+                'jobDescription' => cleanFormInput($_POST['jobDescription']),
+                'university' => cleanFormInput($_POST['university']),
+                'faculty' => cleanFormInput($_POST['faculty']),
+                'course' => cleanFormInput($_POST['course']),
+                'language' => cleanFormInput($_POST['language']),
+                'maxWorkload' => cleanFormInput($_POST['maxWorkload']),
+                'weeklyWorkload' => cleanFormInput($_POST['weeklyWorkload']),
+                'deadlineDate' => cleanFormInput($_POST['deadlineDate'])
+            ];
             
-            // Only show success if no database errors occurred
-            if (empty($errorMessages)) {
-                $successMessage = "Job post created successfully!";
-                $jobPostData = []; // Clear form data on success
-            }
+            createJobPost($pdo, $jobData);
+            $messages[] = "Job post created successfully!";
+            $formData = []; // clear form on success
             
-        // Layer 2: handle and log unexpected system/db exceptions
         } catch (Exception $e) {
-            $errorMessages['registration'] = "An error occurred while creating the job post"; 
+            $messages[] = "An error occurred while creating the job post"; 
             error_log("Job post creation error: " . $e->getMessage());
         }
-        // If validation fails, $jobPostData remains populated
-    }   
+    } else {
+        $messages = $validator->getErrors();
+    }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html>
@@ -101,7 +75,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['createJobPost'])) {
 </head>
 <body>
     <div>
-        <form method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+        <form method="POST" action="">
     <div>
         <label for="jobTitle">
             Job Title <abbr title="The title of the job posting.">?</abbr>
@@ -177,7 +151,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['createJobPost'])) {
 </form>
 
         <div>
-            <?php if(!empty($message)) { echo htmlspecialchars($message); } ?>
+            <?php 
+            if (!empty($messages)) {
+                echo '<ul>';
+                foreach ($messages as $msg) {
+                    echo '<li>' . htmlspecialchars($msg) . '</li>';
+                }
+                echo '</ul>';
+            }
+            ?>
         </div>
     </div>
 </body>

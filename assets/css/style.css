@@ -1,7 +1,18 @@
- /* Dashboard.php */
+/* Dashboard.php */
 body {
   margin: 0;
   font-family: "Lato", sans-serif;
+}
+
+table, td, th {
+  border: 1px solid;
+  padding: 10px;
+}
+
+table {
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .sidebar {
@@ -54,3 +65,4 @@ div.content {
   }
 }
 /* End of Dashboard.php */
+
