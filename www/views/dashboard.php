@@ -1,0 +1,114 @@
+<?php
+    // --- Login Session Check ---
+    session_start();
+    if(!isset($_SESSION['user']['loggedIn']) || $_SESSION['user']['loggedIn']!==True) {
+        echo "<script>
+                alert('Please log in to access this content.');
+                window.location.href = 'index.php';
+              </script>";
+        exit();
+    }
+
+    // --- Dashboard Functionality ---
+    // Define available pages and their titles: pageKey => pageTitle
+
+    $pages = [ // shared pages
+        'overview' => 'Dashboard Overview',
+        'profile' => 'My Profile',
+    ];
+
+    if($_SESSION['user']['userType'] === 'employer') { 
+        $pages = array_merge($pages, [ // add employer pages
+            'createJobPost' => 'Create Job Post',
+            'myJobs' => 'My Posted Jobs',
+        ]);
+    } elseif($_SESSION['user']['userType'] === 'applicant') { 
+        $pages = array_merge($pages, [ // add applicant pages
+            'createApplication' => 'Create Application',
+            'applications' => 'Applications',
+            'availableJobs' => 'Browse Jobs',
+        ]);
+    }
+
+    $pages = array_merge($pages, [ // shared pages
+            'settings' => 'Settings',
+            'logout' => 'Log Out',
+        ]);
+
+    // --- Main Content Display ---
+    // Get and validate the requested page
+    $requestedPage = $_GET['page'] ?? 'overview';
+    $currentPage = array_key_exists($requestedPage, $pages) ? $requestedPage : 'overview';
+    $currentPageTitle = $pages[$currentPage];
+
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teaching Aid - <?= htmlspecialchars($currentPageTitle) ?></title>
+    <link rel="stylesheet" href="../../assets/css/style.css">
+</head>
+<body>
+    <div class="sidebar"> 
+        <?php 
+            foreach($pages as $pageKey => $pageTitle) { 
+                echo "<a href=\"?page=" . htmlspecialchars($pageKey) . "\">$pageTitle</a>";
+            } 
+        ?>
+    </div>
+    <div class="content">
+        <?php
+            switch ($currentPage) {
+                case 'overview':
+                    include 'components/shared/overview.php';
+                    break;
+                    
+                case 'createJobPost':
+                    include 'components/employer/createJobPost.php';
+                    break;
+                    
+                case 'myJobs':
+                    include 'components/employer/listPostedJobs.php';
+                    break;
+                    
+                case 'applications':
+                    include 'components/employer/viewApplicants.php';
+                    break;
+                    
+                case 'availableJobs':
+                    include 'components/applicant/listAvailableJobs.php';
+                    break;
+                    
+                case 'createApplication':
+                    include 'components/applicant/createApplication.php';
+                    break;
+                    
+                case 'profile':
+                    include 'components/shared/editProfile.php';
+                    break;
+                    
+                case 'settings':
+                    include 'components/shared/settings.php';
+                    break;
+
+                case 'logout':
+                    include 'components/shared/logout.php';
+                    break;
+                    
+                default:
+                    ?>
+                    <div class="error-content">
+                        <h2>Page Not Found</h2>
+                        <p>The requested page could not be found.</p>
+                        <a href="?page=overview">Return to Dashboard</a>
+                    </div>
+                    <?php
+                    break;
+            }
+        ?>
+    </div>
+</body>
+</html>
