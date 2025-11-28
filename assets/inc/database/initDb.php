@@ -2,7 +2,7 @@
 /**
  * The initDb.php file contains sql statements to create all of the tables in the db.
  */
-require_once "db.php";
+require_once("db.php");
 
         
         // ---- Create user table if it does not exist ----

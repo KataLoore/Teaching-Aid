@@ -1,0 +1,72 @@
+<?php
+
+    if(!isset($_SESSION['user']['loggedIn']) || $_SESSION['user']['loggedIn']!==True)  {
+            echo "<script>
+                    alert('Please log in to access this content.');
+                    window.location.href = 'index.php';
+                </script>";
+            exit();
+    } elseif ($_SESSION['user']['userType'] !== 'employer') {
+        header("Location: views/dashboard.php");
+        exit();
+    }
+
+    require_once('../../assets/inc/database/db.php');
+    require_once('../../assets/inc/database/jobPostSql.php');
+        
+    $message = "";
+
+    try {
+        $jobPosts = retrieveEmployerJobs($pdo, $_SESSION['user']['userId']);
+    } catch (Exception $e) {
+        error_log("Error retrieving job posts: " . $e->getMessage());
+        $jobPosts = [];
+        $message = "Unable to load job posts at this time.";
+    }
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Your Posted Jobs</title>
+    <link rel="stylesheet" href="../../../assets/css/style.css">
+</head>
+<body>
+<?php if (empty($jobPosts)): ?>
+        <p>You haven't posted any jobs yet.</p>
+        <a href="?page=createJobPost">Create your first job post</a>
+    <?php else: ?>
+        <table>
+            <thead>
+                <tr>
+                    <th>Job Title</th>
+                    <th>University</th>
+                    <th>Course</th>
+                    <th>Status</th>
+                    <th>Posted</th>
+                    <th>Deadline</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($jobPosts as $job): ?>
+                    <tr>
+                        <td><?= htmlspecialchars($job['jobTitle']) ?></td>
+                        <td><?= htmlspecialchars($job['university']) ?></td>
+                        <td><?= htmlspecialchars($job['course']) ?></td>
+                        <td><?= htmlspecialchars($job['status']) ?></td>
+                        <td><?= htmlspecialchars(date('Y-m-d', strtotime($job['publicationDate']))) ?></td>
+                        <td><?= htmlspecialchars(date('Y-m-d', strtotime($job['deadlineDate']))) ?></td>
+                        <td>
+                            <a href="?page=viewJob&id=<?= $job['postId'] ?>">View</a>
+                            <a href="?page=editJob&id=<?= $job['postId'] ?>">Edit</a>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    <?php endif; ?>
+</div>
+</body>
+</html>
