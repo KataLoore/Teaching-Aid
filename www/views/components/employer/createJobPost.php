@@ -14,10 +14,10 @@ if(!isset($_SESSION['user']['loggedIn']) || $_SESSION['user']['loggedIn']!==True
     exit();
 }
 
-require_once '/../../../../assets/inc/functions.php';
-require_once '/../../../../assets/lib/validator.php';
-require_once '/../../../../assets/inc/database/db.php';
-require_once '/../../../../assets/inc/database/jobPostSql.php';
+require_once '../../assets/inc/functions.php';
+require_once '../../assets/lib/validator.php';
+require_once '../../assets/inc/database/db.php';
+require_once '../../assets/inc/database/jobPostSql.php';
     
 $messages = []; 
 $formData = $_POST;

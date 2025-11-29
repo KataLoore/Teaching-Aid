@@ -190,7 +190,7 @@ class Validator {
             $this->errors['jobPostId'] = "Invalid job post ID";
             return false;
         }
-        return true;
+        return true; 
     }
     
     public function validateApplicationStatus($value) {
@@ -207,12 +207,12 @@ class Validator {
     }
     
     public function validateCvFile($file) {
-        if (empty($file) || $file['error'] === UPLOAD_ERR_NO_FILE) {
+        if (empty($file)) { 
             $this->errors['cv'] = "CV file is required";
             return false;
         }
         
-        if ($file['error'] !== UPLOAD_ERR_OK) {
+        if ($file['error'] ) {
             $this->errors['cv'] = "Error uploading CV file";
             return false;
         }
