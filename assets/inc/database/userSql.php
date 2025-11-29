@@ -1,12 +1,12 @@
 <?php
 /**
- * The userSql.php file contains SQL to insert, update and retrieve data 
- * from the user table in the database. The functions are utilised in the user class.
+ * The userSql.php file contains functions with SQL to enable CRUD actions
+ * in the user table in the database. 
  * 
  * @see user.php 
  */
 
-function insertUser($pdo, $newUser) {
+function createUser($pdo, $newUser) {
     $sql = "INSERT INTO user (firstName, lastName, username, email, password, userType) VALUES (:firstName, :lastName, :username, :email, :password, :userType)";
     
     $query = $pdo->prepare($sql);
@@ -19,7 +19,6 @@ function insertUser($pdo, $newUser) {
     
     return $query->execute();
 }
-
     
 function updateUser($pdo, $userUpdates) {
     $sql = "UPDATE user SET 
@@ -61,18 +60,5 @@ function deleteUser($pdo, $userId) {
     $query->bindParam(':userId', $userId, PDO::PARAM_INT);
     $query->execute();
 }
-
-
- /*
-
-// Change user role (requirement!)
-$sql = "UPDATE users SET role = :role WHERE user_id = :user_id";
-$query = $pdo->prepare($sql);
-$query->bindParam(':role', $newRole, PDO::PARAM_STR);
-$query->bindParam(':user_id', $userId, PDO::PARAM_INT);
-$query->execute();}
-}
-
- */
 
 ?>
