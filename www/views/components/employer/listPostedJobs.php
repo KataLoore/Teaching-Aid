@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * The listPostedJobs view shows all the jobs posted by the current user
+ */
     if(!isset($_SESSION['user']['loggedIn']) || $_SESSION['user']['loggedIn']!==True)  {
             echo "<script>
                     alert('Please log in to access this content.');
@@ -17,7 +19,7 @@
     $message = "";
 
     try {
-        $jobPosts = retrieveEmployerJobs($pdo, $_SESSION['user']['userId']);
+        $jobPosts = getEmployerJobs($pdo, $_SESSION['user']['userId']);
     } catch (Exception $e) {
         error_log("Error retrieving job posts: " . $e->getMessage());
         $jobPosts = [];
@@ -33,7 +35,12 @@
     <link rel="stylesheet" href="../../../assets/css/style.css">
 </head>
 <body>
-<?php if (empty($jobPosts)): ?>
+    <h1>Posted Jobs</h1>
+    <?php if (!empty($message)): ?>
+        <p><?= htmlspecialchars($message) ?></p>
+    <?php endif; ?>
+
+    <?php if (empty($jobPosts)): ?>
         <p>You haven't posted any jobs yet.</p>
         <a href="?page=createJobPost">Create your first job post</a>
     <?php else: ?>
@@ -67,6 +74,5 @@
             </tbody>
         </table>
     <?php endif; ?>
-</div>
 </body>
 </html>

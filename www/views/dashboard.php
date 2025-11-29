@@ -19,13 +19,13 @@
 
     if($_SESSION['user']['userType'] === 'employer') { 
         $pages = array_merge($pages, [ // add employer pages
-            'createJobPost' => 'Create Job Post',
+            'postJob' => 'Create Job Post',
             'myJobs' => 'My Posted Jobs',
         ]);
     } elseif($_SESSION['user']['userType'] === 'applicant') { 
         $pages = array_merge($pages, [ // add applicant pages
             'createApplication' => 'Create Application',
-            'applications' => 'Applications',
+            'myApplications' => 'Applications',
             'availableJobs' => 'Browse Jobs',
         ]);
     }
@@ -62,11 +62,12 @@
     <div class="content">
         <?php
             switch ($currentPage) {
+                // -- sidebar links --
                 case 'overview':
                     include 'components/shared/overview.php';
                     break;
                     
-                case 'createJobPost':
+                case 'postJob':
                     include 'components/employer/createJobPost.php';
                     break;
                     
@@ -74,7 +75,7 @@
                     include 'components/employer/listPostedJobs.php';
                     break;
                     
-                case 'applications':
+                case 'myApplications':
                     include 'components/employer/viewApplicants.php';
                     break;
                     
@@ -97,10 +98,20 @@
                 case 'logout':
                     include 'components/shared/logout.php';
                     break;
-                    
+
+                // -- sub-views (accessed through views) --
+                case 'viewJob':
+                    include 'components/shared/viewJob.php';
+                    break;
+
+                case 'editJob':
+                    include 'views/employer/editJob.php';
+                    break;
+  
+                // -- fallback -- ****NEEDED ? 
                 default:
                     ?>
-                    <div class="error-content">
+                    <div>
                         <h2>Page Not Found</h2>
                         <p>The requested page could not be found.</p>
                         <a href="?page=overview">Return to Dashboard</a>

@@ -56,4 +56,6 @@ function createUser($pdo, $newUser, &$errorMessages) {
                 $errorMessages['database'] = "An error occured during user registration. <br>";
             }
     }
+
+    
 ?>
