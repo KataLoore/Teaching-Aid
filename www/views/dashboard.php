@@ -115,7 +115,7 @@
                 
                     // -- sub-view for JobApplication (accessed through views) --
                 case 'viewApplication':
-                    include 'views/applicant/viewApplication.php';
+                    include __DIR__ . '/components/applicant/viewApplication.php';
                     break;
 
               

@@ -76,10 +76,10 @@ try {
                             </span>
                         </td>
                         <td>
-                            <a href="?page=viewApplication&id=<?= $app['applicationId'] ?>">View Details</a>
-                            <?php if ($app['status'] === 'submitted'): ?>
-                                | <a href="?page=editApplication&id=<?= $app['applicationId'] ?>">Edit</a>
-                            <?php endif; ?>
+                            <a href="?page=viewApplication&uuid=<?= $app['uuid'] ?>">View Details</a>
+                                <?php if ($app['status'] === 'submitted'): ?>
+                                    | <a href="?page=editApplication&uuid=<?= $app['uuid'] ?>">Edit</a>
+                                <?php endif; ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>
