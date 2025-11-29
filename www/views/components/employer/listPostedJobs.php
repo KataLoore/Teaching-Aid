@@ -66,8 +66,8 @@
                         <td><?= htmlspecialchars(date('Y-m-d', strtotime($job['publicationDate']))) ?></td>
                         <td><?= htmlspecialchars(date('Y-m-d', strtotime($job['deadlineDate']))) ?></td>
                         <td>
-                            <a href="?page=viewJob&id=<?= $job['postId'] ?>">View</a>
-                            <a href="?page=editJob&id=<?= $job['postId'] ?>">Edit</a>
+                            <a href="?page=viewJob&id=<?= htmlspecialchars($job['uuid']) ?>">View</a>
+                            <a href="?page=editJob&id=<?= htmlspecialchars($job['uuid']) ?>">Edit</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>

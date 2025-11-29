@@ -13,6 +13,7 @@
 
     require_once('../../assets/inc/database/db.php');
     require_once('../../assets/inc/database/jobPostSql.php');
+    require_once('../../assets/inc/functions.php');
         
     $message = "";
     $job = null;
@@ -21,30 +22,45 @@
 
     // Check if job ID is provided
     if (!isset($_GET['id']) || empty($_GET['id'])) {
-        $redirectPage = ($userType === 'employer') ? 'listPostedJobs' : 'browseJobs';
+        $redirectPage = ($userType === 'employer') ? 'myJobs' : 'availableJobs';
         header("Location: ?page=$redirectPage");
         exit();
     }
 
-    $jobId = (int)$_GET['id'];
-
-    try {
-        $job = getJobPostById($pdo, $jobId);
-        
-        if (!$job) {
-            $message = "Job post not found.";
-        } elseif ($userType === 'applicant' && $job['status'] !== 'open') {
-            $message = "This job posting is no longer accepting applications.";
+    $uuid = $_GET['id'];
+    
+    // Validate UUID format
+    if (!isValidUuid($uuid)) {
+        $message = "Invalid job identifier.";
+    } else {
+        try {
+            $job = getJobPostByUuid($pdo, $uuid);
+            
+            if (!$job) {
+                $message = "Job post not found.";
+            } else {
+                // SECURITY: Check access permissions based on user type
+                if ($userType === 'employer') {
+                    // Employers can only view their own job posts
+                    if ($job['employerId'] !== $_SESSION['user']['userId']) {
+                        $message = "You do not have permission to view this job post.";
+                        $job = null;
+                    } else {
+                        $isOwner = true;
+                    }
+                } elseif ($userType === 'applicant') {
+                    // Applicants can only view open jobs
+                    if ($job['status'] !== 'open') {
+                        $message = "This job posting is no longer accepting applications.";
+                        $job = null;
+                    }
+                }
+            }
+            
+        } catch (Exception $e) {
+            error_log("Error retrieving job post: " . $e->getMessage());
+            $message = "Unable to load job post at this time.";
         }
-        
-        // Check if current user is the owner
-        if ($job && $userType === 'employer') {
-            $isOwner = ($job['employerId'] === $_SESSION['user']['userId']);
-        }
-        
-    } catch (Exception $e) {
-        error_log("Error retrieving job post: " . $e->getMessage());
-        $message = "Unable to load job post at this time.";
     }
 ?>
 
@@ -58,9 +74,9 @@
 <body>
     <div>
         <?php if ($userType === 'employer'): ?>
-            <a href="?page=listPostedJobs">← Back to Job List</a>
+            <a href="?page=myJobs">← Back to Job List</a>
         <?php else: ?>
-            <a href="?page=browseJobs">← Back to Browse Jobs</a>
+            <a href="?page=availableJobs">← Back to Browse Jobs</a>
         <?php endif; ?>
         
         <?php if (!empty($message)): ?>
@@ -125,15 +141,15 @@
             <div>
                 <?php if ($userType === 'employer' && $isOwner): ?>
                     <!-- Employer actions -->
-                    <a href="?page=editJob&id=<?= $job['postId'] ?>">Edit Job Post</a>
-                    <a href="?page=listPostedJobs">Back to List</a>
+                    <a href="?page=editJob&id=<?= htmlspecialchars($job['uuid']) ?>">Edit Job Post</a>
+                    <a href="?page=myJobs">Back to List</a>
                 <?php elseif ($userType === 'applicant' && $job['status'] === 'open'): ?>
                     <!-- Applicant actions -->
-                    <a href="?page=applyForJob&id=<?= $job['postId'] ?>">Apply for This Job</a>
-                    <a href="?page=browseJobs">Back to Browse</a>
+                    <a href="?page=applyForJob&id=<?= htmlspecialchars($job['uuid']) ?>">Apply for This Job</a>
+                    <a href="?page=availableJobs">Back to Browse</a>
                 <?php else: ?>
                     <!-- Fallback -->
-                    <a href="?page=dashboard">Back to Dashboard</a>
+                    <a href="?page=overview">Back to Dashboard</a>
                 <?php endif; ?>
             </div>
         <?php endif; ?>

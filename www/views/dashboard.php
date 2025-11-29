@@ -38,8 +38,13 @@
     // --- Main Content Display ---
     // Get and validate the requested page
     $requestedPage = $_GET['page'] ?? 'overview';
-    $currentPage = array_key_exists($requestedPage, $pages) ? $requestedPage : 'overview';
-    $currentPageTitle = $pages[$currentPage];
+    
+    // Define valid pages (including hidden ones like viewJob)
+    $validPages = array_merge(array_keys($pages), ['viewJob', 'editJob']); // Add hidden pages here
+    $currentPage = in_array($requestedPage, $validPages) ? $requestedPage : 'overview';
+    
+    // Set page title (use a default for hidden pages)
+    $currentPageTitle = $pages[$currentPage] ?? 'View Details';
 
 ?>
 
