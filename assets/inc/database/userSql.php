@@ -1,59 +1,64 @@
 <?php
 /**
- * The userSql.php file contains SQL to insert, update and retrieve data 
- * from the user table in the database. The functions are utilised in the user class.
+ * The userSql.php file contains functions with SQL to enable CRUD actions
+ * in the user table in the database. 
  * 
  * @see user.php 
  */
 
-function createUser($pdo, $newUser, &$errorMessages) {
+function createUser($pdo, $newUser) {
+    $sql = "INSERT INTO user (firstName, lastName, username, email, password, userType) VALUES (:firstName, :lastName, :username, :email, :password, :userType)";
+    
+    $query = $pdo->prepare($sql);
+    $query->bindParam(':firstName', $newUser['firstName'], PDO::PARAM_STR);
+    $query->bindParam(':lastName', $newUser['lastName'], PDO::PARAM_STR);
+    $query->bindParam(':username', $newUser['username'], PDO::PARAM_STR);
+    $query->bindParam(':email', $newUser['email'], PDO::PARAM_STR);
+    $query->bindParam(':password', $newUser['password'], PDO::PARAM_STR);
+    $query->bindParam(':userType', $newUser['userType'], PDO::PARAM_STR);
+    
+    return $query->execute();
+}
+    
+function updateUser($pdo, $userUpdates) {
+    $sql = "UPDATE user SET 
+                firstName = :firstName,
+                lastName = :lastName,
+                username = :username,
+                email = :email,
+                password = :password,
+                userType = :userType
+            WHERE userId = :userId";
+    
+    $query = $pdo->prepare($sql);
+    $query->bindParam(':firstName', $userUpdates['firstName'], PDO::PARAM_STR);
+    $query->bindParam(':lastName', $userUpdates['lastName'], PDO::PARAM_STR);
+    $query->bindParam(':username', $userUpdates['username'], PDO::PARAM_STR);
+    $query->bindParam(':email', $userUpdates['email'], PDO::PARAM_STR);
+    $query->bindParam(':password', $userUpdates['password'], PDO::PARAM_STR);
+    $query->bindParam(':userType', $userUpdates['userType'], PDO::PARAM_STR);
+    $query->bindParam(':userId', $userUpdates['userId'], PDO::PARAM_INT);
+    $query->execute();
+   
+}
 
-        // --- Add user to users table ---
-        try {
-            // Check if username already exists 
-            $usernameSql = "SELECT EXISTS(SELECT 1 FROM user where username = :username)";
+function getUserById($pdo, $user) {
+    $sql = "SELECT userId, firstName, lastName, username, email, userType 
+            FROM user WHERE userId = :userId";
+    
+    $query = $pdo->prepare($sql);
+    $query->bindParam(':userId', $user['userId'], PDO::PARAM_INT);
+    $query->execute();
+    
+    return $query->fetch(PDO::FETCH_ASSOC);
+}
 
-            $usernameQuery = $pdo->prepare($usernameSql);
-            $usernameQuery->bindParam(':username', $newUser['username'], PDO::PARAM_STR);
-            $usernameQuery->execute();
 
-            // Check if email already exists 
-            $emailSql = "SELECT EXISTS(SELECT 1 FROM user where email = :email)";
+function deleteUser($pdo, $userId) {
+    $sql = "DELETE FROM user WHERE userId = :userId";
+    $query = $pdo->prepare($sql);
+    $query->bindParam(':userId', $userId, PDO::PARAM_INT);
+    $query->execute();
+}
 
-            $emailQuery = $pdo->prepare($emailSql);
-            $emailQuery->bindParam(':email', $newUser['email'], PDO::PARAM_STR);
-            $emailQuery->execute();
-
-            // Store value (0|1) from sql queries
-            $usernameExists = $usernameQuery->fetchColumn();
-            $emailExists = $emailQuery->fetchColumn();
-
-            // Error handling
-            if ($usernameExists && $emailExists) {
-                $errorMessages['database'] = "User with this username and email already exists";
-            } elseif ($usernameExists) {
-                $errorMessages['database'] = "User with this username already exists";
-            } elseif ($emailExists) {
-                $errorMessages['database'] = "User with this email already exists";
-            } else {
-                // Insert user if neither username or email already exists in db
-                $sql = "INSERT INTO user (firstName, lastName, username, email, password, userType) VALUES (:firstName, :lastName, :username, :email, :password, :userType)";
-
-                $st = $pdo->prepare($sql);
-
-                $st->bindParam(':firstName', $newUser['firstName'], PDO::PARAM_STR);
-                $st->bindParam(':lastName', $newUser['lastName'], PDO::PARAM_STR);
-                $st->bindParam(':username', $newUser['username'], PDO::PARAM_STR);
-                $st->bindParam(':email', $newUser['email'], PDO::PARAM_STR);
-                $st->bindParam(':password', $newUser['password'], PDO::PARAM_STR);
-                $st->bindParam(':userType', $newUser['userType'], PDO::PARAM_STR);
-
-                $st->execute();
-            } 
-        }
-            catch (PDOException $e) {
-                error_log("INSERT user error: " . $e->getMessage());
-                $errorMessages['database'] = "An error occured during user registration. <br>";
-            }
-    }
 ?>

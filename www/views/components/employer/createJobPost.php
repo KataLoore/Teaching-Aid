@@ -36,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['createJobPost'])) {
     $validator->validateName($_POST['faculty'], 'faculty');
     $validator->validateCourseCode($_POST['course']);
     
-    if (!$validator->hasErrors()) {
+    if (!$validator->hasErrors()) { 
         try {
             $jobData = [ // sanitize data
                 'employerId' => $_SESSION['user']['userId'],
@@ -51,9 +51,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['createJobPost'])) {
                 'deadlineDate' => cleanFormInput($_POST['deadlineDate'])
             ];
             
-            createJobPost($pdo, $jobData);
-            $messages[] = "Job post created successfully!";
-            $formData = []; // clear form on success
+            $result = createJobPost($pdo, $jobData); 
+            if($result === True) {
+                $messages[] = "Job post created successfully!";
+                $formData = []; // clear form on success
+            }
+            
             
         } catch (Exception $e) {
             $messages[] = "An error occurred while creating the job post"; 
@@ -149,15 +152,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['createJobPost'])) {
         <button type="submit" name="createJobPost">Post Job</button>
     </div>
 </form>
-
         <div>
             <?php 
             if (!empty($messages)) {
-                echo '<ul>';
                 foreach ($messages as $msg) {
-                    echo '<li>' . htmlspecialchars($msg) . '</li>';
+                    echo htmlspecialchars($msg) . '<br>';
                 }
-                echo '</ul>';
             }
             ?>
         </div>

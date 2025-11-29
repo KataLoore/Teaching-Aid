@@ -162,5 +162,75 @@ class Validator {
         
         return true;
     }
+
+        // ----- JOB APPLICATION VALIDATION -----
+
+    public function validateCoverLetter($value, $minLength = 50, $maxLength = 5000) {
+        if (empty($value)) {
+            $this->errors['coverLetter'] = "Cover letter is required";
+            return false;
+        }
+        if (strlen($value) < $minLength) {
+            $this->errors['coverLetter'] = "Cover letter must be at least {$minLength} characters long";
+            return false;
+        }
+        if (strlen($value) > $maxLength) {
+            $this->errors['coverLetter'] = "Cover letter cannot exceed {$maxLength} characters";
+            return false;
+        }
+        return true;
+    }
+    
+    public function validateJobPostId($value) {
+        if (empty($value)) {
+            $this->errors['jobPostId'] = "Job post ID is required";
+            return false;
+        }
+        if (!filter_var($value, FILTER_VALIDATE_INT) || $value <= 0) {
+            $this->errors['jobPostId'] = "Invalid job post ID";
+            return false;
+        }
+        return true; 
+    }
+    
+    public function validateApplicationStatus($value) {
+        $validStatuses = ['submitted', 'under review', 'accepted', 'rejected'];
+        if (empty($value)) {
+            $this->errors['status'] = "Application status is required";
+            return false;
+        }
+        if (!in_array($value, $validStatuses, true)) {
+            $this->errors['status'] = "Invalid application status";
+            return false;
+        }
+        return true;
+    }
+    
+    public function validateCvFile($file) {
+        if (empty($file)) { 
+            $this->errors['cv'] = "CV file is required";
+            return false;
+        }
+        
+        if ($file['error'] ) {
+            $this->errors['cv'] = "Error uploading CV file";
+            return false;
+        }
+        
+        $allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+        if (!in_array($file['type'], $allowedTypes)) {
+            $this->errors['cv'] = "CV must be a PDF or Word document";
+            return false;
+        }
+        
+        $maxSize = 5 * 1024 * 1024; // 5MB
+        if ($file['size'] > $maxSize) {
+            $this->errors['cv'] = "CV file size cannot exceed 5MB";
+            return false;
+        }
+        
+        return true;
+    }
+    
 }
 ?>
