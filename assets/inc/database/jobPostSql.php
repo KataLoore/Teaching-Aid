@@ -69,6 +69,7 @@ function getJobPostById($pdo, $postId) {
     return $job; // Returns the job array or false if not found
 }
 
+// get job post by uuid for URL display
 function getJobPostByUuid($pdo, $uuid) {
     // Validate UUID format first
     if (!isValidUuid($uuid)) {
@@ -81,6 +82,24 @@ function getJobPostByUuid($pdo, $uuid) {
     $stmt->execute();
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
+
+// get all jobs and employer names for displaying to applicants
+function getAllJobs($pdo) {
+    $sql = "SELECT jp.*, u.firstName, u.lastName 
+            FROM job_post jp
+            JOIN user u ON jp.employerId = u.userId
+            ORDER BY jp.publicationDate DESC";
+    $stmt = $pdo->prepare($sql);
+    $stmt = $pdo->prepare($sql);
+    $result = $stmt->execute();
+    if (!$result) {
+        throw new Exception("Failed to retrieve job posts");
+    }
+    
+    $jobs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return $jobs; // Returns the array of jobs
+}
+
 
 // -- UPDATE --
 // Update an existing job post by post id and employer id

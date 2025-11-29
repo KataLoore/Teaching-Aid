@@ -21,7 +21,8 @@ $applications = [];
 
 try {
 // Fetch applications for the logged-in applicant
-  
+    $applications = getJobApplicationsByApplicant($pdo, $_SESSION['user']['userId']);
+    
     
 } catch (Exception $e) {
     error_log("Error retrieving applications: " . $e->getMessage());

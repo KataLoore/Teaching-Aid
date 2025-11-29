@@ -21,9 +21,11 @@ $message = "";
 $jobPosts = [];
 
 try {
-    require_once('../../assets/inc/database/jobPostSql.php');
-    // Get all available job posts
-     
+  require_once('../../assets/inc/database/jobPostSql.php');
+
+    // Fetch all open job posts
+     $jobPosts = getAllJobs($pdo);
+
 } catch (Exception $e) {
     error_log("Error retrieving job posts: " . $e->getMessage());
     $message = "Unable to load job posts at this time.";

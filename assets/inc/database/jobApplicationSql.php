@@ -6,7 +6,7 @@
 
 require_once("db.php");
 
-function insertJobApplication($pdo, $jobApplicationData) {
+function createJobApplication($pdo, $jobApplicationData) {
     $sql = "INSERT INTO job_application (applicantId, jobPostId, coverLetter, cv_path, status, submitDate) 
             VALUES (:applicantId, :jobPostId, :coverLetter, :cv_path, :status, :submitDate)";
 
@@ -31,16 +31,13 @@ function updateJobApplicationStatus($pdo, $applicationId, $newStatus) {
     return $query->execute();
 }
 
-function getJobApplicationsByApplicant($pdo, $applicantId) {
-    $applications = [];
-    
+function getJobApplicationsByApplicant($pdo, $applicantId) {    
     $sql = "SELECT * FROM job_application WHERE applicantId = :applicantId";
     $query = $pdo->prepare($sql);
     $query->bindParam(':applicantId', $applicantId, PDO::PARAM_INT);
     $query->execute();
-    $applications = $query->fetchAll(PDO::FETCH_ASSOC);
     
-    return $applications;
+    return $query->fetchAll(PDO::FETCH_ASSOC);
 }
 
 function getApplicationsSpecificJobPost($pdo, $jobPostId) {
@@ -53,8 +50,6 @@ function getApplicationsSpecificJobPost($pdo, $jobPostId) {
 }   
 
 function getSingleJobApplication($pdo, $applicationId) {
-    $application = null;
-
         $sql = "SELECT * FROM job_application WHERE applicationId = :applicationId";
         $query = $pdo->prepare($sql);
         $query->bindParam(':applicationId', $applicationId, PDO::PARAM_INT);
@@ -69,9 +64,7 @@ function deleteJobApplication($pdo, $applicationId) {
         $sql = "DELETE FROM job_application WHERE applicationId = :applicationId";
         $query = $pdo->prepare($sql);
         $query->bindParam(':applicationId', $applicationId, PDO::PARAM_INT);
-        $query->execute();
 
+        return $query->execute(); 
   
-}
-
-?>
+}   
