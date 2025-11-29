@@ -25,7 +25,7 @@
     } elseif($_SESSION['user']['userType'] === 'applicant') { 
         $pages = array_merge($pages, [ // add applicant pages
             'createApplication' => 'Create Application',
-            'myApplications' => 'Applications',
+            'myApplications' => 'My Applications',
             'availableJobs' => 'Browse Jobs',
         ]);
     }
@@ -40,7 +40,7 @@
     $requestedPage = $_GET['page'] ?? 'overview';
     
     // Define valid pages (including hidden ones like viewJob)
-    $validPages = array_merge(array_keys($pages), ['viewJob', 'editJob']); // Add hidden pages here
+    $validPages = array_merge(array_keys($pages), ['viewJob', 'editJob', 'viewApplication', 'editApplication']); 
     $currentPage = in_array($requestedPage, $validPages) ? $requestedPage : 'overview';
     
     // Set page title (use a default for hidden pages)
@@ -81,7 +81,7 @@
                     break;
                     
                 case 'myApplications':
-                    include 'components/employer/viewApplicants.php';
+                    include 'components/applicant/listAppliedJobs.php';
                     break;
                     
                 case 'availableJobs':
@@ -104,7 +104,7 @@
                     include 'components/shared/logout.php';
                     break;
 
-                // -- sub-views (accessed through views) --
+                // -- sub-views for JobPost (accessed through views) --
                 case 'viewJob':
                     include 'components/shared/viewJob.php';
                     break;
@@ -112,7 +112,13 @@
                 case 'editJob':
                     include 'views/employer/editJob.php';
                     break;
-  
+                
+                    // -- sub-view for JobApplication (accessed through views) --
+                case 'viewApplication':
+                    include 'views/applicant/viewApplication.php';
+                    break;
+
+              
                 // -- fallback -- ****NEEDED ? 
                 default:
                     ?>
