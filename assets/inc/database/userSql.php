@@ -6,7 +6,7 @@
  * @see user.php 
  */
 
-function insertUser($pdo, $newUser) {
+function createUser($pdo, $newUser) {
     $sql = "INSERT INTO user (firstName, lastName, username, email, password, userType) VALUES (:firstName, :lastName, :username, :email, :password, :userType)";
     
     $query = $pdo->prepare($sql);

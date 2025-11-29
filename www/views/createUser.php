@@ -51,7 +51,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['register'])) {
             // Hash password and add to form data
             $registrationData['password'] = password_hash($registrationData['password'], PASSWORD_DEFAULT);
             
-            insertUser($pdo, $registrationData); // Save user to database
+            createUser($pdo, $registrationData); // Save user to database
             
             // Only show success if no database errors occurred
             if (empty($errorMessages)) {

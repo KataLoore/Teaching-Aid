@@ -67,6 +67,23 @@ function getJobPostById($pdo, $postId) {
     return $job; // Returns the job array or false if not found
 }
 
+function getAllJobs($pdo) {
+    $sql = "SELECT jp.*, u.firstName, u.lastName 
+            FROM job_post jp
+            JOIN user u ON jp.employerId = u.userId
+            ORDER BY jp.publicationDate DESC";
+    $stmt = $pdo->prepare($sql);
+    $stmt = $pdo->prepare($sql);
+    $result = $stmt->execute();
+    if (!$result) {
+        throw new Exception("Failed to retrieve job posts");
+    }
+    
+    $jobs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return $jobs; // Returns the array of jobs
+}
+
+
 // -- UPDATE --
 // Update an existing job post by post id and employer id
 function updateJobPost($pdo, $jobPostData) {
