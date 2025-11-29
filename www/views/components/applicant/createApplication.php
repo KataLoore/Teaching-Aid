@@ -68,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['createApplication'])) 
             $applicationData['jobTitle'] = ""; // Placeholder until ViewJob integration
             
             // Save application to database
-            updateJobApplication($pdo, $applicationData, $errorMessages);
+            insertJobApplication($pdo, $applicationData);
             
             // Only show success if no database errors occurred
             if (empty($errorMessages)) {
