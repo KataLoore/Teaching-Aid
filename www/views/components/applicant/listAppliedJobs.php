@@ -15,19 +15,19 @@ if(!isset($_SESSION['user']['loggedIn']) || $_SESSION['user']['loggedIn']!==True
 }
 
 require_once('../../assets/inc/database/db.php');
-
 $message = "";
 $applications = [];
 
 try {
+    require_once('../../assets/inc/database/jobApplicationSql.php');
 // Fetch applications for the logged-in applicant
     $applications = getJobApplicationsByApplicant($pdo, $_SESSION['user']['userId']);
-    
     
 } catch (Exception $e) {
     error_log("Error retrieving applications: " . $e->getMessage());
     $message = "Unable to load your applications at this time.";
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -46,7 +46,7 @@ try {
     
     <?php if (empty($applications)): ?>
         <p>You haven't applied to any positions yet.</p>
-        <a href="?page=availableJobs">Browse Available Jobs</a>
+        <a href="?page=listAvailableJobs">Browse Available Jobs</a>
     <?php else: ?>
         <p>You have submitted <?= count($applications) ?> application(s)</p>
         
