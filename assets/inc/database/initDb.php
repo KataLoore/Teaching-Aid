@@ -57,6 +57,7 @@ require_once("db.php");
                 applicantId INT NOT NULL,
                 jobPostId INT NOT NULL,
                 coverLetter TEXT,
+                cv_path VARCHAR(255),
                 status ENUM('submitted', 'under review', 'rejected', 'accepted') NOT NULL DEFAULT 'submitted',
                 submitDate DATE NOT NULL,
                 FOREIGN KEY (applicantId) REFERENCES user(userId),
