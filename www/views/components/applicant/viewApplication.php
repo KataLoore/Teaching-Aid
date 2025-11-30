@@ -1,12 +1,13 @@
 <?php
+/**
+ * The viewApplication  displays full details of a single job application
+ * Works for both applicants (viewing their own application) and employer (viewing applications to choose candidate for a job) 
+ */
 if(!isset($_SESSION['user']['loggedIn']) || $_SESSION['user']['loggedIn']!==True)  {
     echo "<script>
             alert('Please log in to access this content.');
             window.location.href = '../../index.php';
         </script>";
-    exit();
-} elseif ($_SESSION['user']['userType'] !== 'applicant') {
-    header("Location: ../dashboard.php");
     exit();
 }
 
@@ -14,13 +15,16 @@ require_once('../../assets/inc/database/db.php');
 require_once('../../assets/inc/database/jobApplicationSql.php');
 require_once('../../assets/inc/functions.php');
 
-$uuid = $_GET['uuid'] ?? null;
 $message = "";
 $application = null;
+$isOwner = false;
+$userType = $_SESSION['user']['userType'];
+
 
 // Check if application UUID is provided
 if (!isset($_GET['uuid']) || empty($_GET['uuid'])) {
-    header("Location: ?page=myApplications");
+    $redirectPage = ($userType === 'employer') ? 'myJobs' : 'myApplications';
+    header("Location: ?page$redirectPage");
     exit();
 }
 
@@ -36,12 +40,27 @@ if (!isValidUuid($uuid)) {
         if (!$application) {
             $message = "Application not found.";
         } else {
-            // Security check: Only show if user owns this application
-            if ($application['applicantId'] !== $_SESSION['user']['userId']) {
+            // Security check: Chech acess permission based on User Type
+            if($userType === 'applicant') {
+                if ($application['applicantId'] !== $_SESSION['user']['userId']) {
                 $message = "You do not have permission to view this application.";
-                $application = null;
+                $application = null; // Clear application data
+                } else {
+                    $isOwner = true;
+                }
+            } elseif ($userType === 'employer') {
+                // Employers can only view applications for their own job posts
+                // Need to check if this application is for one of their job posts
+                $jobPost = getJobPostById($pdo, $application['jobPostId']);
+                
+                if (!$jobPost || $jobPost['employerId'] !== $_SESSION['user']['userId']) {
+                    $message = "You do not have permission to view this application.";
+                    $application = null; // Clear application data 
             }
+            
         }
+    }
+    
     } catch (Exception $e) {
         error_log("Error retrieving application: " . $e->getMessage());
         $message = "Unable to load application at this time.";
