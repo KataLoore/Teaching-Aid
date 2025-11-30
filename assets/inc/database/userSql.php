@@ -9,15 +9,20 @@
 function createUser($pdo, $newUser) {
     $sql = "INSERT INTO user (firstName, lastName, username, email, password, userType) VALUES (:firstName, :lastName, :username, :email, :password, :userType)";
     
-    $query = $pdo->prepare($sql);
-    $query->bindParam(':firstName', $newUser['firstName'], PDO::PARAM_STR);
-    $query->bindParam(':lastName', $newUser['lastName'], PDO::PARAM_STR);
-    $query->bindParam(':username', $newUser['username'], PDO::PARAM_STR);
-    $query->bindParam(':email', $newUser['email'], PDO::PARAM_STR);
-    $query->bindParam(':password', $newUser['password'], PDO::PARAM_STR);
-    $query->bindParam(':userType', $newUser['userType'], PDO::PARAM_STR);
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':firstName', $newUser['firstName'], PDO::PARAM_STR);
+    $stmt->bindParam(':lastName', $newUser['lastName'], PDO::PARAM_STR);
+    $stmt->bindParam(':username', $newUser['username'], PDO::PARAM_STR);
+    $stmt->bindParam(':email', $newUser['email'], PDO::PARAM_STR);
+    $stmt->bindParam(':password', $newUser['password'], PDO::PARAM_STR);
+    $stmt->bindParam(':userType', $newUser['userType'], PDO::PARAM_STR);
     
-    return $query->execute();
+    $result = $stmt->execute();
+    
+    if (!$result) {
+        throw new Exception("Failed to create user");
+    }
+    return true;
 }
     
 function updateUser($pdo, $userUpdates) {
@@ -30,15 +35,15 @@ function updateUser($pdo, $userUpdates) {
                 userType = :userType
             WHERE userId = :userId";
     
-    $query = $pdo->prepare($sql);
-    $query->bindParam(':firstName', $userUpdates['firstName'], PDO::PARAM_STR);
-    $query->bindParam(':lastName', $userUpdates['lastName'], PDO::PARAM_STR);
-    $query->bindParam(':username', $userUpdates['username'], PDO::PARAM_STR);
-    $query->bindParam(':email', $userUpdates['email'], PDO::PARAM_STR);
-    $query->bindParam(':password', $userUpdates['password'], PDO::PARAM_STR);
-    $query->bindParam(':userType', $userUpdates['userType'], PDO::PARAM_STR);
-    $query->bindParam(':userId', $userUpdates['userId'], PDO::PARAM_INT);
-    $query->execute();
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':firstName', $userUpdates['firstName'], PDO::PARAM_STR);
+    $stmt->bindParam(':lastName', $userUpdates['lastName'], PDO::PARAM_STR);
+    $stmt->bindParam(':username', $userUpdates['username'], PDO::PARAM_STR);
+    $stmt->bindParam(':email', $userUpdates['email'], PDO::PARAM_STR);
+    $stmt->bindParam(':password', $userUpdates['password'], PDO::PARAM_STR);
+    $stmt->bindParam(':userType', $userUpdates['userType'], PDO::PARAM_STR);
+    $stmt->bindParam(':userId', $userUpdates['userId'], PDO::PARAM_INT);
+    $stmt->execute();
    
 }
 
@@ -46,19 +51,19 @@ function getUserById($pdo, $user) {
     $sql = "SELECT userId, firstName, lastName, username, email, userType 
             FROM user WHERE userId = :userId";
     
-    $query = $pdo->prepare($sql);
-    $query->bindParam(':userId', $user['userId'], PDO::PARAM_INT);
-    $query->execute();
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':userId', $user['userId'], PDO::PARAM_INT);
+    $stmt->execute();
     
-    return $query->fetch(PDO::FETCH_ASSOC);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
 
 function deleteUser($pdo, $userId) {
     $sql = "DELETE FROM user WHERE userId = :userId";
-    $query = $pdo->prepare($sql);
-    $query->bindParam(':userId', $userId, PDO::PARAM_INT);
-    $query->execute();
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+    $stmt->execute();
 }
 
 ?>

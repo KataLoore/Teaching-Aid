@@ -74,7 +74,7 @@ try {
                         <td><?= htmlspecialchars($job['weeklyWorkload']) ?>h/week (max <?= htmlspecialchars($job['maxWorkload']) ?>h)</td>
                         <td><?= htmlspecialchars(date('Y-m-d', strtotime($job['deadlineDate']))) ?></td>
                         <td>
-                            <a href="?page=viewJob&id=<?= $job['postId'] ?>">View Details</a> |
+                            <a href="?page=viewJob&id=<?= $job['uuid'] ?>">View Details</a> |
                             <a href="?page=createApplication&jobId=<?= $job['postId'] ?>">Apply</a>
                         </td>
                     </tr>
