@@ -121,3 +121,22 @@ function deleteJobApplication($pdo, $applicationId) {
     }
     return true;
 }
+
+// Check if user has already applied to a specific job
+function hasUserAppliedToJob($pdo, $applicantId, $jobPostId) {
+    $sql = "SELECT COUNT(*) as count 
+            FROM job_application 
+            WHERE applicantId = :applicantId AND jobPostId = :jobPostId";
+    
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':applicantId', $applicantId, PDO::PARAM_INT);
+    $stmt->bindParam(':jobPostId', $jobPostId, PDO::PARAM_INT);
+    $stmt->execute();
+    
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $result['count'] > 0;
+
+    if (!$result) {
+        throw new Exception("Failed to check if user has applied to job");
+    }
+}
