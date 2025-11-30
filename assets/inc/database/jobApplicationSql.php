@@ -43,17 +43,6 @@ function updateJobApplicationStatus($pdo, $applicationId, $newStatus) {
     return true;
 }
 
-/*
-function updateJobApplicationCoverLetter($pdo, $applicationId, $newCoverLetter) {
-    $sql = "UPDATE job_application SET coverLetter = :coverLetter WHERE applicationId = :applicationId";
-    $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':coverLetter', $newCoverLetter, PDO::PARAM_STR);
-    $stmt->bindParam(':applicationId', $applicationId, PDO::PARAM_INT);
-    
-    return $stmt->execute();
-}
-*/
-
 function getJobApplicationsByApplicant($pdo, $applicantId) {    
     $sql = "SELECT ja.*, jp.jobTitle, jp.university, jp.course, u.firstName, u.lastName
             FROM job_application ja
