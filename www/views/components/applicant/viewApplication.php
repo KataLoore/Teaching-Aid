@@ -18,10 +18,13 @@ $uuid = $_GET['uuid'] ?? null;
 $message = "";
 $application = null;
 
-if (!$uuid) {
+// Check if application UUID is provided
+if (!isset($_GET['uuid']) || empty($_GET['uuid'])) {
     header("Location: ?page=myApplications");
     exit();
 }
+
+$uuid = $_GET['uuid'];
 
 // Validate UUID format
 if (!isValidUuid($uuid)) {
@@ -69,9 +72,6 @@ if (!isValidUuid($uuid)) {
                 <p><strong>Cover Letter:</strong> <?= nl2br(htmlspecialchars($application['coverLetter'])) ?></p>
                 <p><strong>Applied On:</strong> <?= htmlspecialchars(date('F j, Y', strtotime($application['submitDate']))) ?></p>
             </div>
-            <div>
-                    <a href="?page=editApplication&uuid=<?= htmlspecialchars($application['uuid']) ?>">Edit Application</a>
-                </div>
             <?php endif; ?>
     </div>
 </body>

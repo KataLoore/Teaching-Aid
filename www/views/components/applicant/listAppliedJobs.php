@@ -63,23 +63,20 @@ try {
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($applications as $app): ?>
+                <?php foreach ($applications as $application): ?>
                     <tr>
-                        <td><strong><?= htmlspecialchars($app['jobTitle']) ?></strong></td>
-                        <td><?= htmlspecialchars($app['university']) ?></td>
-                        <td><?= htmlspecialchars($app['course']) ?></td>
-                        <td><?= htmlspecialchars($app['firstName'] . ' ' . $app['lastName']) ?></td>
-                        <td><?= htmlspecialchars(date('Y-m-d', strtotime($app['submitDate']))) ?></td>
+                        <td><strong><?= htmlspecialchars($application['jobTitle']) ?></strong></td>
+                        <td><?= htmlspecialchars($application['university']) ?></td>
+                        <td><?= htmlspecialchars($application['course']) ?></td>
+                        <td><?= htmlspecialchars($application['firstName'] . ' ' . $application['lastName']) ?></td>
+                        <td><?= htmlspecialchars(date('Y-m-d', strtotime($application['submitDate']))) ?></td>
                         <td>
-                            <span class="status-<?= strtolower(str_replace(' ', '-', $app['status'])) ?>">
-                                <?= htmlspecialchars(ucfirst($app['status'])) ?>
+                            <span class="status-<?= strtolower(str_replace(' ', '-', $application['status'])) ?>">
+                                <?= htmlspecialchars(ucfirst($application['status'])) ?>
                             </span>
                         </td>
                         <td>
-                            <a href="?page=viewApplication&uuid=<?= $app['uuid'] ?>">View Details</a>
-                                <?php if ($app['status'] === 'submitted'): ?>
-                                    | <a href="?page=editApplication&uuid=<?= $app['uuid'] ?>">Edit</a>
-                                <?php endif; ?>
+                            <a href="?page=viewApplication&uuid=<?= $application['uuid'] ?>">View Details</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>
