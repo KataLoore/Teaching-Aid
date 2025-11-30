@@ -232,5 +232,36 @@ class Validator {
         return true;
     }
     
+        // ----- JOB APPLICATION VALIDATION -----
+
+    // Validate that user is not applying to their own job 
+    public function validateNotOwnJob($pdo, $jobPostId, $userId) {
+        require_once __DIR__ . '/../inc/database/jobPostSql.php';
+        
+        $jobPost = getJobPostById($pdo, $jobPostId);
+        
+        if (!$jobPost) {
+            $this->errors['jobPostId'] = "Job post not found";
+            return false;
+        }
+        
+        if ($jobPost['employerId'] === $userId) {
+            $this->errors['jobPostId'] = "You cannot apply to your own job posting";
+            return false;
+        }
+        
+        return true;
+    }
+
+    // Validate that user hasn't already applied to this job
+    public function validateNotDuplicateApplication($pdo, $applicantId, $jobPostId) {
+        require_once __DIR__ . '/../inc/database/jobApplicationSql.php';
+        
+        if (hasUserAppliedToJob($pdo, $applicantId, $jobPostId)) {
+            $this->errors['jobPostId'] = "You have already applied to this job";
+            return false;
+        }
+        
+        return true;
+    }
 }
-?>

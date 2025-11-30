@@ -32,7 +32,6 @@ function updateUser($pdo, $userUpdates) {
                 username = :username,
                 email = :email,
                 password = :password,
-                userType = :userType
             WHERE userId = :userId";
     
     $stmt = $pdo->prepare($sql);
@@ -41,18 +40,37 @@ function updateUser($pdo, $userUpdates) {
     $stmt->bindParam(':username', $userUpdates['username'], PDO::PARAM_STR);
     $stmt->bindParam(':email', $userUpdates['email'], PDO::PARAM_STR);
     $stmt->bindParam(':password', $userUpdates['password'], PDO::PARAM_STR);
-    $stmt->bindParam(':userType', $userUpdates['userType'], PDO::PARAM_STR);
     $stmt->bindParam(':userId', $userUpdates['userId'], PDO::PARAM_INT);
-    $stmt->execute();
-   
+    $result = $stmt->execute();
+    
+    if(!$result) {
+        throw new Exception("Failed to update user");
+    }
+
+    return true; 
+
 }
 
-function getUserById($pdo, $user) {
+function changeUserRole($pdo, $userId, $newRole) {
+    $sql = "UPDATE user SET userType = :userType WHERE userId = :userId";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':userType', $newRole, PDO::PARAM_STR);
+    $stmt->bindParam(':userId', $userId, PDO::PARAM_STR);
+    $result = $stmt->execute();
+
+    if(!$result) {
+        throw new Exception("Failed to change user role");
+    }
+    return true;
+}
+
+
+function getUserById($pdo, $userId) {
     $sql = "SELECT userId, firstName, lastName, username, email, userType 
             FROM user WHERE userId = :userId";
     
     $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':userId', $user['userId'], PDO::PARAM_INT);
+    $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
     $stmt->execute();
     
     return $stmt->fetch(PDO::FETCH_ASSOC);
