@@ -21,13 +21,13 @@
     $userType = $_SESSION['user']['userType'];
 
     // Check if job ID is provided
-    if (!isset($_GET['id']) || empty($_GET['id'])) {
+    if (!isset($_GET['uuid']) || empty($_GET['uuid'])) {
         $redirectPage = ($userType === 'employer') ? 'myJobs' : 'availableJobs';
         header("Location: ?page=$redirectPage");
         exit();
     }
 
-    $uuid = $_GET['id'];
+    $uuid = $_GET['uuid'];
     
     // Validate UUID format
     if (!isValidUuid($uuid)) {
