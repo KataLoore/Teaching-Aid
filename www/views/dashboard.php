@@ -40,7 +40,7 @@
     $requestedPage = $_GET['page'] ?? 'overview';
     
     // Define valid pages (including hidden ones like viewJob)
-    $validPages = array_merge(array_keys($pages), ['viewJob', 'editJob', 'viewApplication', 'editApplication']); 
+    $validPages = array_merge(array_keys($pages), ['viewJob', 'editJob', 'viewApplication']); 
     $currentPage = in_array($requestedPage, $validPages) ? $requestedPage : 'overview';
     
     // Set page title (use a default for hidden pages)
