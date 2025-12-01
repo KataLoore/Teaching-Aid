@@ -54,6 +54,7 @@ require_once("db.php");
     try {
         $sql = "CREATE TABLE IF NOT EXISTS job_application (
             applicationId INT AUTO_INCREMENT PRIMARY KEY,
+            uuid CHAR(36) NOT NULL UNIQUE,
             applicantId INT NOT NULL,
             jobPostId INT NOT NULL,
             coverLetter TEXT,

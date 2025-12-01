@@ -4,7 +4,7 @@
     if(!isset($_SESSION['user']['loggedIn']) || $_SESSION['user']['loggedIn']!==True) {
         echo "<script>
                 alert('Please log in to access this content.');
-                window.location.href = 'index.php';
+                window.location.href = 'logIn.php';
               </script>";
         exit();
     }
@@ -13,7 +13,6 @@
     // Define available pages and their titles: pageKey => pageTitle
 
     $pages = [ // shared pages
-        'overview' => 'Dashboard Overview',
         'profile' => 'My Profile',
     ];
 
@@ -24,9 +23,9 @@
         ]);
     } elseif($_SESSION['user']['userType'] === 'applicant') { 
         $pages = array_merge($pages, [ // add applicant pages
-            'createApplication' => 'Create Application',
-            'myApplications' => 'Applications',
             'availableJobs' => 'Browse Jobs',
+            'createApplication' => 'Create Application',
+            'myApplications' => 'My Applications',
         ]);
     }
 
@@ -37,13 +36,11 @@
 
     // --- Main Content Display ---
     // Get and validate the requested page
-    $requestedPage = $_GET['page'] ?? 'overview';
+    $requestedPage = $_GET['page'] ?? 'profile';
     
     // Define valid pages (including hidden ones like viewJob)
-    $validPages = array_merge(array_keys($pages), ['viewJob', 'editJob']); // Add hidden pages here
-    $currentPage = in_array($requestedPage, $validPages) ? $requestedPage : 'overview';
-    
-    // Set page title (use a default for hidden pages)
+    $validPages = array_merge(array_keys($pages), ['viewJob', 'editJob', 'viewApplication']);
+    $currentPage = in_array($requestedPage, $validPages) ? $requestedPage : 'profile';    // Set page title (use a default for hidden pages)
     $currentPageTitle = $pages[$currentPage] ?? 'View Details';
 
 ?>
@@ -68,8 +65,8 @@
         <?php
             switch ($currentPage) {
                 // -- sidebar links --
-                case 'overview':
-                    include 'components/shared/overview.php';
+                case 'profile':
+                    include 'components/shared/viewProfile.php';
                     break;
                     
                 case 'postJob':
@@ -81,7 +78,7 @@
                     break;
                     
                 case 'myApplications':
-                    include 'components/employer/viewApplicants.php';
+                    include 'components/applicant/listAppliedJobs.php';
                     break;
                     
                 case 'availableJobs':
@@ -92,10 +89,6 @@
                     include 'components/applicant/createApplication.php';
                     break;
                     
-                case 'profile':
-                    include 'components/shared/editProfile.php';
-                    break;
-                    
                 case 'settings':
                     include 'components/shared/settings.php';
                     break;
@@ -104,22 +97,27 @@
                     include 'components/shared/logout.php';
                     break;
 
-                // -- sub-views (accessed through views) --
+                // -- sub-views for JobPost (accessed through views) --
                 case 'viewJob':
                     include 'components/shared/viewJob.php';
                     break;
 
                 case 'editJob':
-                    include 'views/employer/editJob.php';
+                    include 'components/employer/editJobPost.php';
                     break;
-  
+                
+                    // -- sub-view for JobApplication (accessed through views) --
+                case 'viewApplication':
+                    include __DIR__ . '/components/applicant/viewApplication.php';
+                    break;
+
                 // -- fallback -- ****NEEDED ? 
                 default:
                     ?>
                     <div>
                         <h2>Page Not Found</h2>
                         <p>The requested page could not be found.</p>
-                        <a href="?page=overview">Return to Dashboard</a>
+                        <a href="?page=profile">Return to Dashboard</a>
                     </div>
                     <?php
                     break;

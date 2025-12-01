@@ -6,7 +6,7 @@
 if(!isset($_SESSION['user']['loggedIn']) || $_SESSION['user']['loggedIn']!==True) {
     echo "<script>
             alert('Please log in to access this content.');
-            window.location.href = '../../index.php';
+            window.location.href = '../../logIn.php';
           </script>";
     exit();
 } elseif ($_SESSION['user']['userType'] !== 'applicant') {
@@ -15,19 +15,19 @@ if(!isset($_SESSION['user']['loggedIn']) || $_SESSION['user']['loggedIn']!==True
 }
 
 require_once('../../assets/inc/database/db.php');
-
 $message = "";
 $applications = [];
 
 try {
+    require_once('../../assets/inc/database/jobApplicationSql.php');
 // Fetch applications for the logged-in applicant
     $applications = getJobApplicationsByApplicant($pdo, $_SESSION['user']['userId']);
-    
     
 } catch (Exception $e) {
     error_log("Error retrieving applications: " . $e->getMessage());
     $message = "Unable to load your applications at this time.";
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -63,23 +63,20 @@ try {
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($applications as $app): ?>
+                <?php foreach ($applications as $application): ?>
                     <tr>
-                        <td><strong><?= htmlspecialchars($app['jobTitle']) ?></strong></td>
-                        <td><?= htmlspecialchars($app['university']) ?></td>
-                        <td><?= htmlspecialchars($app['course']) ?></td>
-                        <td><?= htmlspecialchars($app['firstName'] . ' ' . $app['lastName']) ?></td>
-                        <td><?= htmlspecialchars(date('Y-m-d', strtotime($app['submitDate']))) ?></td>
+                        <td><strong><?= htmlspecialchars($application['jobTitle']) ?></strong></td>
+                        <td><?= htmlspecialchars($application['university']) ?></td>
+                        <td><?= htmlspecialchars($application['course']) ?></td>
+                        <td><?= htmlspecialchars($application['firstName'] . ' ' . $application['lastName']) ?></td>
+                        <td><?= htmlspecialchars(date('Y-m-d', strtotime($application['submitDate']))) ?></td>
                         <td>
-                            <span class="status-<?= strtolower(str_replace(' ', '-', $app['status'])) ?>">
-                                <?= htmlspecialchars(ucfirst($app['status'])) ?>
+                            <span class="status-<?= strtolower(str_replace(' ', '-', $application['status'])) ?>">
+                                <?= htmlspecialchars(ucfirst($application['status'])) ?>
                             </span>
                         </td>
                         <td>
-                            <a href="?page=viewApplication&id=<?= $app['applicationId'] ?>">View Details</a>
-                            <?php if ($app['status'] === 'submitted'): ?>
-                                | <a href="?page=editApplication&id=<?= $app['applicationId'] ?>">Edit</a>
-                            <?php endif; ?>
+                            <a href="?page=viewApplication&uuid=<?= $application['uuid'] ?>">View Details</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>

@@ -7,7 +7,7 @@
 if(!isset($_SESSION['user']['loggedIn']) || $_SESSION['user']['loggedIn']!==True) {
     echo "<script>
             alert('Please log in to access this content.');
-            window.location.href = '../../index.php';
+            window.location.href = '../../logIn.php';
           </script>";
     exit();
 } elseif ($_SESSION['user']['userType'] !== 'applicant') {
@@ -16,15 +16,14 @@ if(!isset($_SESSION['user']['loggedIn']) || $_SESSION['user']['loggedIn']!==True
 }
 
 require_once('../../assets/inc/database/db.php');
+require_once('../../assets/inc/database/jobPostSql.php');
 
 $message = "";
 $jobPosts = [];
 
 try {
-  require_once('../../assets/inc/database/jobPostSql.php');
-
     // Fetch all open job posts
-     $jobPosts = getAllJobs($pdo);
+    $jobPosts = getAllAvailableJobs($pdo);
 
 } catch (Exception $e) {
     error_log("Error retrieving job posts: " . $e->getMessage());
@@ -74,7 +73,7 @@ try {
                         <td><?= htmlspecialchars($job['weeklyWorkload']) ?>h/week (max <?= htmlspecialchars($job['maxWorkload']) ?>h)</td>
                         <td><?= htmlspecialchars(date('Y-m-d', strtotime($job['deadlineDate']))) ?></td>
                         <td>
-                            <a href="?page=viewJob&id=<?= $job['postId'] ?>">View Details</a> |
+                            <a href="?page=viewJob&uuid=<?= $job['uuid'] ?>">View Details</a> |
                             <a href="?page=createApplication&jobId=<?= $job['postId'] ?>">Apply</a>
                         </td>
                     </tr>

@@ -6,7 +6,7 @@
 if(!isset($_SESSION['user']['loggedIn']) || $_SESSION['user']['loggedIn']!==True) {
     echo "<script>
             alert('Please log in to access this content.');
-            window.location.href = '../../index.php';
+            window.location.href = '../../logIn.php';
           </script>";
     exit();
 } elseif ($_SESSION['user']['userType'] !== 'applicant') {
@@ -23,7 +23,11 @@ $messages = [];
 $formData = $_POST;
 
 // Pre-fill jobPostId if coming from a specific job listing
-$prefilledJobId = isset($_GET['jobId']) ? (int)$_GET['jobId'] : '';
+if (isset($_GET['jobId'])) {
+    $prefilledJobId = (int)$_GET['jobId'];
+} else {
+    $prefilledJobId = '';
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['createApplication'])) {
     
@@ -33,6 +37,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['createApplication'])) 
     $validator->validateJobPostId($_POST['jobPostId']);
     $validator->validateCoverLetter($_POST['coverLetter']);
     
+     // Security validation
+    if (!$validator->hasErrors()) {
+        $jobPostId = (int)cleanFormInput($_POST['jobPostId']);
+        $validator->validateNotOwnJob($pdo, $jobPostId, $_SESSION['user']['userId']);
+        $validator->validateNotDuplicateApplication($pdo, $_SESSION['user']['userId'], $jobPostId);
+    }
+    // If no validation errors, proceed to create application
     if (!$validator->hasErrors()) {
         try {
             $applicationData = [ // sanitize data
@@ -45,8 +56,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['createApplication'])) 
             ];
             
             createJobApplication($pdo, $applicationData);
-            $messages[] = "Application submitted successfully!";
-            $formData = []; // clear form on success
+                $messages[] = "Application submitted successfully!";
+                $formData = []; // clear form after success
             
         } catch (Exception $e) {
             $messages[] = "An error occurred while submitting your application"; 
@@ -79,7 +90,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['createApplication'])) 
                        name="jobPostId" 
                        value="<?= preserveFormValue($formData, 'jobPostId') ?: htmlspecialchars($prefilledJobId) ?>" 
                        required>
-                <small>This will be auto-filled when clicking "Apply" from a job listing</small>
             </div>
 
             <div>

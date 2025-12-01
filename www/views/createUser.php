@@ -79,79 +79,58 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['register'])) {
     <link rel="stylesheet" href="../../assets/css/style.css">
 </head>
 <body class="register-body">
-    <div class="register-container">
-        <!-- Logo positioned outside the form -->
-        <div class="register-logo">
-            <div class="logo-icon">🎓</div>
-            <div class="logo-text">Teaching Aid</div>
-        </div>
-        
-        <!-- Form Header -->
-        <div class="register-header">
-            <div class="register-subtitle">Let's get you started</div>
-            <h2 class="register-title">Create an Account</h2>
-        </div>
-        
-        <!-- Success message display -->
+
+    <!-- Success message display -->
         <?php if (!empty($successMessage)): ?>
-            <div class="success-message"><?= htmlspecialchars($successMessage) ?></div>
+            <div style="text-align: center;"><?= htmlspecialchars($successMessage) ?></div>
         <?php endif; ?>
+
+    <div class="form-container">
+        <h1 style="text-align: center;">Create an Account</h1>
 
         <!-- Error messages display -->
         <?php foreach (['registration', 'database'] as $errorType): ?>
             <?php if (isset($errorMessages[$errorType])): ?>
-                <div class="error-message"><?= htmlspecialchars($errorMessages[$errorType]) ?></div>
+                <div><?= htmlspecialchars($errorMessages[$errorType]) ?></div>
             <?php endif; ?>
         <?php endforeach; ?>
         
         <!-- Registration Form -->
-        <form method="post" action="<?=htmlspecialchars($_SERVER['PHP_SELF']);?>" class="register-form" autocomplete="off">
+        <form method="post" action="<?=htmlspecialchars($_SERVER['PHP_SELF']);?>" autocomplete="off">
             
-            <!-- Left Column -->
-            <div class="form-group">
+            <div>
                 <label for="firstName">First Name</label>
-                <input required type="text" id="firstName" name="firstName" placeholder="Johnson" autocomplete="off" value="<?= preserveFormValue($registrationData, 'firstName') ?>" 
-                <?= isset($errorMessages['firstName']) ? 'class="error"' : '' ?>>
+                <input required type="text" id="firstName" name="firstName" placeholder="Johnson" autocomplete="off" value="<?= preserveFormValue($registrationData, 'firstName') ?>">
                 <?= displayErrorMessage($errorMessages, 'firstName') ?>
             </div>
 
-            <!-- Right Column -->
-            <div class="form-group">
+            <div>
                 <label for="lastName">Last Name</label>
-                <input required type="text" id="lastName" name="lastName" placeholder="Doe" autocomplete="off" value="<?= preserveFormValue($registrationData, 'lastName') ?>" 
-                <?= isset($errorMessages['lastName']) ? 'class="error"' : '' ?>>
+                <input required type="text" id="lastName" name="lastName" placeholder="Doe" autocomplete="off" value="<?= preserveFormValue($registrationData, 'lastName') ?>">
                 <?= displayErrorMessage($errorMessages, 'lastName') ?>
             </div>
 
-            <!-- Left Column -->
-            <div class="form-group">
+            <div>
                 <label for="email">Email</label>
-                <input required type="email" id="email" name="email" placeholder="johnsondoe@gmail.com" autocomplete="off" value="<?= preserveFormValue($registrationData, 'email') ?>" 
-                <?= isset($errorMessages['email']) ? 'class="error"' : '' ?>>
+                <input required type="email" id="email" name="email" placeholder="johnsondoe@gmail.com" autocomplete="off" value="<?= preserveFormValue($registrationData, 'email') ?>">
                 <?= displayErrorMessage($errorMessages, 'email') ?>
             </div>
 
-            <!-- Right Column -->
-            <div class="form-group">
+            <div>
                 <label for="username">Username</label>
-                <input required type="text" id="username" name="username" placeholder="johnsondoe" autocomplete="off" value="<?= preserveFormValue($registrationData, 'username') ?>" 
-                <?= isset($errorMessages['username']) ? 'class="error"' : '' ?>>
+                <input required type="text" id="username" name="username" placeholder="johnsondoe" autocomplete="off" value="<?= preserveFormValue($registrationData, 'username') ?>">
                 <?= displayErrorMessage($errorMessages, 'username') ?>
             </div>
 
-            <!-- Left Column -->
-            <div class="form-group">
+            <div>
                 <label for="password">Password</label>
-                <input required type="password" id="password" name="password" placeholder="••••••••••••" autocomplete="off" 
-                <?= isset($errorMessages['password']) ? 'class="error"' : '' ?>>
+                <input required type="password" id="password" name="password" placeholder="••••••••••••" autocomplete="off">
                 <?= displayErrorMessage($errorMessages, 'password') ?>
             </div>
 
-            <!-- Right Column -->
-            <div class="form-group">
+            <div>
                 <label for="userType">Register as</label>
-                <select required id="userType" name="userType" 
-                <?= isset($errorMessages['userType']) ? 'class="error"' : '' ?>>
+                <select required id="userType" name="userType">
                     <option value=""></option>
                     <option value="applicant" <?= isSelected($registrationData, 'userType', 'applicant') ?>>Student</option>
                     <option value="employer" <?= isSelected($registrationData, 'userType', 'employer') ?>>Employer</option>
@@ -159,10 +138,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['register'])) {
                 <?= displayErrorMessage($errorMessages, 'userType') ?>
             </div>
 
-            <button type="submit" name="register" class="register-button">Register</button>
+            <button type="submit" name="register">Register</button>
         </form>
-        <div class="login-link">
-            Already have an account? <a href="../index.php">LOGIN HERE</a>
+        <div><br>
+            Already have an account? <a href="../logIn.php">Login here!</a>
         </div>
     </div>
 </body>
