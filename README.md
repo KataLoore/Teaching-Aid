@@ -40,6 +40,21 @@ A web-based platform for managing teaching assistant job postings and applicatio
 4. **Access the Application**
    - Open your web browser and navigate to `http://localhost/Teaching-Aid/www/logIn.php`
    - The database will be initialized automatically on first run
+   - Sample data (users, job posts, and applications) will be populated automatically for testing
+
+### Test Accounts
+
+The system includes pre-populated test accounts for development and testing:
+
+**Employers:**
+
+- Username: `j.anderson`, `s.johnson`, `m.chen`
+
+**Applicants:**
+
+- Username: `e.wilson`, `j.brown`, `l.davis`, `a.garcia`
+
+**Password for all accounts:** `password123`
 
 ### Default Database Configuration
 
@@ -65,6 +80,7 @@ Teaching-Aid/
 │   │   ├── functions.php              # Utility functions (form sanitization, etc.)
 │   │   └── database/
 │   │       ├── db.php                 # Database connection configuration
+│   │       ├── exampleData.php        # Sample data insertion for testing/development
 │   │       ├── initDb.php             # Database initialization and table creation
 │   │       ├── jobApplicationSql.php   # Job application database operations
 │   │       ├── jobPostSql.php         # Job posting database operations
