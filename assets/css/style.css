@@ -11,6 +11,53 @@ body {
   margin-top: 20px;
 }
 
+.form-container-wide {
+  width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 20px;
+}
+
+.form-container-wide form div {
+  margin-bottom: 10px;
+}
+
+.form-container-wide label {
+  display: block;
+  margin-bottom: 3px;
+}
+
+.form-container-wide input {
+  width: 100%;
+  padding: 5px;
+  box-sizing: border-box;
+}
+
+.form-container-wide textarea {
+  width: 100%;
+  padding: 5px;
+  box-sizing: border-box;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.form-container-wide details {
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.form-container-wide summary {
+  cursor: pointer;
+  font-weight: bold;
+  padding: 5px 0;
+}
+
+.form-container-wide summary:hover {
+  background-color: #f5f5f5;
+}
+
 .form-container form div {
   margin-bottom: 10px;
 }

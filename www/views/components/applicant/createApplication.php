@@ -20,37 +20,56 @@ require_once '../../assets/inc/functions.php';
 require_once '../../assets/lib/validator.php';
 require_once '../../assets/inc/database/db.php';
 require_once '../../assets/inc/database/jobApplicationSql.php';
+require_once '../../assets/inc/database/jobPostSql.php';
 
 $messages = [];
 $formData = $_POST;
+$jobPost = null;
 
-// Pre-fill jobPostId if coming from a specific job listing
-if (isset($_GET['jobId'])) {
-    $prefilledJobId = (int)$_GET['jobId'];
+// Get job UUID from URL parameter
+if (isset($_GET['uuid'])) {
+    $uuid = $_GET['uuid'];
+    
+    // Validate UUID format
+    if (!isValidUuid($uuid)) {
+        $messages[] = "Invalid job identifier.";
+    } else {
+        try {
+            $jobPost = getJobPostByUuid($pdo, $uuid);
+            if (!$jobPost) {
+                $messages[] = "Job post not found.";
+            } elseif ($jobPost['status'] !== 'open') {
+                $messages[] = "This job posting is no longer accepting applications.";
+                $jobPost = null;
+            }
+        } catch (Exception $e) {
+            $messages[] = "Error retrieving job information.";
+            error_log("Error fetching job post: " . $e->getMessage());
+        }
+    }
 } else {
-    $prefilledJobId = '';
+    $messages[] = "No job specified for application.";
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['createApplication'])) {
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['createApplication']) && $jobPost) {
     
     $validator = new Validator();
     
-    // Validate raw input
-    $validator->validateJobPostId($_POST['jobPostId']);
+    // Validate cover letter input
     $validator->validateCoverLetter($_POST['coverLetter']);
     
-     // Security validation
+    // Security validation
     if (!$validator->hasErrors()) {
-        $jobPostId = (int)cleanFormInput($_POST['jobPostId']);
-        $validator->validateNotOwnJob($pdo, $jobPostId, $_SESSION['user']['userId']);
-        $validator->validateNotDuplicateApplication($pdo, $_SESSION['user']['userId'], $jobPostId);
+        $validator->validateNotOwnJob($pdo, $jobPost['postId'], $_SESSION['user']['userId']);
+        $validator->validateNotDuplicateApplication($pdo, $_SESSION['user']['userId'], $jobPost['postId']);
     }
+    
     // If no validation errors, proceed to create application
     if (!$validator->hasErrors()) {
         try {
             $applicationData = [ // sanitize data
                 'applicantId' => $_SESSION['user']['userId'],
-                'jobPostId' => cleanFormInput($_POST['jobPostId']),
+                'jobPostId' => $jobPost['postId'],
                 'coverLetter' => cleanFormInput($_POST['coverLetter']),
                 'cv_Path' => null, // TODO: Implement file upload later
                 'status' => 'submitted',
@@ -58,8 +77,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['createApplication'])) 
             ];
             
             createJobApplication($pdo, $applicationData);
-                $messages[] = "Application submitted successfully!";
-                $formData = []; // clear form after success
+            $messages[] = "Application submitted successfully!";
+            $formData = []; // clear form after success
             
         } catch (Exception $e) {
             $messages[] = "An error occurred while submitting your application"; 
@@ -79,24 +98,50 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['createApplication'])) 
     <link rel="stylesheet" href="../../../../assets/css/style.css">
 </head>
 <body>
+
     <p><br><a href="?page=availableJobs">← Back to Available Jobs</a></p>
-    <div class="form-container">
+    
+    <div class="form-container-wide">
         <h1 style="text-align: center;">Submit Job Application</h1>
         
-        <form method="POST" action="">
-            <div>
-                Job Post ID <abbr title="The ID of the job you're applying for">?</abbr> <input type="number" name="jobPostId" value="<?= preserveFormValue($formData, 'jobPostId') ?: htmlspecialchars($prefilledJobId) ?>" required>
-            </div>
+        <?php if ($jobPost): ?>
+            <!-- Job Information Section -->
+            <details>
+                <summary> Details</summary>
+                <div style="margin-left: 20px; margin-top: 10px;">
+                    <p><strong>Job Title:</strong> <?= htmlspecialchars($jobPost['jobTitle']) ?></p>
+                    <p><strong>Course:</strong> <?= htmlspecialchars($jobPost['course']) ?></p>
+                    <p><strong>University:</strong> <?= htmlspecialchars($jobPost['university']) ?></p>
+                    <p><strong>Faculty:</strong> <?= htmlspecialchars($jobPost['faculty']) ?></p>
+                    <p><strong>Language:</strong> <?= htmlspecialchars($jobPost['language']) ?></p>
+                    <p><strong>Workload:</strong> <?= htmlspecialchars($jobPost['weeklyWorkload']) ?>h/week (max <?= htmlspecialchars($jobPost['maxWorkload']) ?>h)</p>
+                    <p><strong>Application Deadline:</strong> <?= htmlspecialchars(date('Y-m-d', strtotime($jobPost['deadlineDate']))) ?></p>
+                </div>
+            </details>
 
-            <div>
-                Cover Letter <abbr title="Explain why you're qualified for this position">?</abbr><br>
-                <textarea name="coverLetter" rows="8" placeholder="Explain why you're qualified for this position" required><?= preserveFormValue($formData, 'coverLetter') ?></textarea>
-            </div>
+            <!-- Applicant Information Section -->
+            <details>
+                <summary>Your Information</summary>
+                <div style="margin-left: 20px; margin-top: 10px;">
+                    <p><strong>Name:</strong> <?= htmlspecialchars($_SESSION['user']['firstName'] . ' ' . $_SESSION['user']['lastName']) ?></p>
+                    <p><strong>Email:</strong> <?= htmlspecialchars($_SESSION['user']['email']) ?></p>
+                    <p><em>This is the information the employer will see when reviewing your application.</em></p>
+                </div>
+            </details>
 
-            <div>
-                <button type="submit" name="createApplication">Submit Application</button>
-            </div>
-        </form>
+            <!-- Application Form -->
+            <form method="POST" action=""><br>
+                <div>
+                    <label for="coverLetter">Cover Letter <abbr title="Explain why you're qualified for this position">?</abbr></label>
+                    <textarea name="coverLetter" id="coverLetter" rows="8" placeholder="Explain why you're qualified for this position and why you're interested in this role..." required><?= preserveFormValue($formData, 'coverLetter') ?></textarea>
+                </div>
+
+                <div>
+                    <button type="submit" name="createApplication">Submit Application</button>
+                </div>
+            </form>
+        <?php endif; ?>
+        
         <div>
             <?php 
             if (!empty($messages)) {

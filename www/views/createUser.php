@@ -131,7 +131,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['register'])) {
                 <label for="userType">Register as</label>
                 <select required id="userType" name="userType">
                     <option value=""></option>
-                    <option value="applicant" <?= isSelected($registrationData, 'userType', 'applicant') ?>>Student</option>
+                    <option value="applicant" <?= isSelected($registrationData, 'userType', 'applicant') ?>>Applicant</option>
                     <option value="employer" <?= isSelected($registrationData, 'userType', 'employer') ?>>Employer</option>
                 </select>
                 <?= displayErrorMessage($errorMessages, 'userType') ?>
