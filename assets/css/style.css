@@ -19,10 +19,31 @@ table {
   margin: 0;
   padding: 0;
   width: 200px;
-  background-color: #f1f1f1;
   position: fixed;
   height: 100%;
-  overflow: auto;
+  background-color: rgba(255, 128, 0, 0.2);
+}
+
+.sidebar .logo-container {
+  padding: 20px 10px;
+  text-align: center;
+  background-color: rgb(255, 255, 255);
+}
+
+.sidebar .logo-container a {
+  display: inline-block;
+  padding: 0;
+  
+}
+
+.sidebar .logo-container a:hover {
+  background-color: transparent;
+}
+
+.sidebar .sidebar-logo {
+  width: 100%;
+  max-width: 180px;
+  height: auto;
 }
 
 .sidebar a {
@@ -44,7 +65,8 @@ table {
 
 div.content {
   margin-left: 200px;
-  padding: 1px 16px;
+  padding: 1px 20px;
+
   height: 1000px;
 }
 

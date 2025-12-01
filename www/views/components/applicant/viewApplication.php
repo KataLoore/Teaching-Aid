@@ -27,7 +27,7 @@ $userType = $_SESSION['user']['userType'];
 // Check if application UUID is provided
 if (!isset($_GET['uuid']) || empty($_GET['uuid'])) {
     $redirectPage = ($userType === 'employer') ? 'myJobs' : 'myApplications';
-    header("Location: ?page$redirectPage");
+    header("Location: ?page=$redirectPage");
     exit();
 }
 
@@ -43,27 +43,24 @@ if (!isValidUuid($uuid)) {
         if (!$application) {
             $message = "Application not found.";
         } else {
-            // Security check: Chech acess permission based on User Type
+            // Security check: Check access permission based on User Type
             if($userType === 'applicant') {
+
                 if ($application['applicantId'] !== $_SESSION['user']['userId']) {
-                $message = "You do not have permission to view this application.";
-                $application = null; // Clear application data
+                    $message = "You do not have permission to view this application.";
+                    $application = null;
                 } else {
                     $isOwner = true;
                 }
+
             } elseif ($userType === 'employer') {
                 // Employers can only view applications for their own job posts
-                // Need to check if this application is for one of their job posts
-                $jobPost = getJobPostById($pdo, $application['jobPostId']);
-                
-                if (!$jobPost || $jobPost['employerId'] !== $_SESSION['user']['userId']) {
+                if ($application['employerId'] !== $_SESSION['user']['userId']) {
                     $message = "You do not have permission to view this application.";
-                    $application = null; // Clear application data 
+                    $application = null;
+                }
             }
-            
         }
-    }
-    
     } catch (Exception $e) {
         error_log("Error retrieving application: " . $e->getMessage());
         $message = "Unable to load application at this time.";
@@ -80,22 +77,46 @@ if (!isValidUuid($uuid)) {
 </head>
 <body>
     <div>
-        <a href="?page=myApplications">← Back to My Applications</a>
+        <?php if ($userType === 'applicant'): ?>
+            <a href="?page=myApplications">← Back to My Applications</a>
+        <?php else: ?>
+            <a href="?page=myJobs">← Back to My Jobs</a>
+        <?php endif; ?>
+        
         <?php if (!empty($message)): ?>
-            <p  ?>><?= htmlspecialchars($message) ?></p>
+            <p><?= htmlspecialchars($message) ?></p>
+
         <?php elseif ($application): ?>
-            <h1>Application for  <?= htmlspecialchars($application['jobTitle']) ?></h1>
-            <div>
-                <h2>Application Details</h2>
-                <p><strong>Employer:</strong> <?= htmlspecialchars($application['firstName'] . ' ' . $application['lastName']) ?></p>
-                <p><strong>University:</strong> <?= htmlspecialchars($application['university']) ?></p>
-                <p><strong>Course:</strong> <?= htmlspecialchars($application['course']) ?></p>
-                <p><strong>Status:</strong> <?= htmlspecialchars($application['status']) ?></p>
-                <p><strong>Cover Letter:</strong> <?= nl2br(htmlspecialchars($application['coverLetter'])) ?></p>
-                <p><strong>Applied On:</strong> <?= htmlspecialchars(date('F j, Y', strtotime($application['submitDate']))) ?></p>
-            </div>
+            <?php if ($userType === 'applicant'): ?>
+                <!-- Applicant viewing their own application -->
+                <h1>Your Application for <?= htmlspecialchars($application['jobTitle']) ?></h1>
+                <div>
+                    <h2>Job Details</h2>
+                    <p><strong>Employer:</strong> <?= htmlspecialchars($application['employerFirstName'] . ' ' . $application['employerLastName']) ?></p>
+                    <p><strong>University:</strong> <?= htmlspecialchars($application['university']) ?></p>
+                    <p><strong>Course:</strong> <?= htmlspecialchars($application['course']) ?></p>
+                    <p><strong>Status:</strong> <?= htmlspecialchars($application['status']) ?></p>
+                    <p><strong>Applied On:</strong> <?= htmlspecialchars(date('F j, Y', strtotime($application['submitDate']))) ?></p>
+                    
+                    <h2>Your Cover Letter</h2>
+                    <p><?= nl2br(htmlspecialchars($application['coverLetter'])) ?></p>
+                </div>
+
+            <?php else: ?>
+                <!-- Employer viewing an application to their job -->
+                <h1>Application for <?= htmlspecialchars($application['jobTitle']) ?></h1>
+                <div>
+                    <h2>Applicant Information</h2>
+                    <p><strong>Name:</strong> <?= htmlspecialchars($application['applicantFirstName'] . ' ' . $application['applicantLastName']) ?></p>
+                    <p><strong>Email:</strong> <?= htmlspecialchars($application['applicantEmail']) ?></p>
+                    <p><strong>Status:</strong> <?= htmlspecialchars($application['status']) ?></p>
+                    <p><strong>Applied On:</strong> <?= htmlspecialchars(date('F j, Y', strtotime($application['submitDate']))) ?></p>
+                    
+                    <h2>Cover Letter</h2>
+                    <p><?= nl2br(htmlspecialchars($application['coverLetter'])) ?></p>
+                </div>
             <?php endif; ?>
+        <?php endif; ?>
     </div>
-    
 </body>
 </html>

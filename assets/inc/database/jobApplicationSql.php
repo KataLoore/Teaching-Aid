@@ -1,14 +1,16 @@
 <?php
-/* 
- * This file contains SQL functions related to job applications.
- * These functions are used to create, update, and retrieve job application data from the database.
-*/
+/**
+ * The jobApplicationSql.php file contains functions with SQL to enable CRUD actions
+ * in the job_application table in the database. 
+ */
 
 require_once("db.php");
 require_once(__DIR__ . "/../functions.php");
 
+// -- CREATE --
+// Create a new job application record
 function createJobApplication($pdo, $jobApplicationData) {
-    $uuid = generateUuid();
+    $uuid = generateUuid(); // generate UUID for the job application
     
     $sql = "INSERT INTO job_application (uuid, applicantId, jobPostId, coverLetter, status, submitDate) 
             VALUES (:uuid, :applicantId, :jobPostId, :coverLetter, :status, :submitDate)";
@@ -21,29 +23,16 @@ function createJobApplication($pdo, $jobApplicationData) {
     $stmt->bindParam(':status', $jobApplicationData['status'], PDO::PARAM_STR);
     $stmt->bindParam(':submitDate', $jobApplicationData['submitDate'], PDO::PARAM_STR);
     
-    $result = $stmt->execute();
+    $result = $stmt->execute(); // returns boolean
 
     if (!$result) {
-        throw new Exception("Failed to create job post");
+        throw new Exception("Failed to create job application");
     }
     return true;
 }
 
-
-function updateJobApplicationStatus($pdo, $applicationId, $newStatus) {
-    $sql = "UPDATE job_application SET status = :status WHERE applicationId = :applicationId";
-    $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':status', $newStatus, PDO::PARAM_STR);
-    $stmt->bindParam(':applicationId', $applicationId, PDO::PARAM_INT);
-    
-    $result = $stmt->execute();
-
-    if (!$result) {
-        throw new Exception("Failed to update job application status");
-    }
-    return true;
-}
-
+// -- RETRIEVE --
+// Get all job applications submitted by a specific applicant
 function getJobApplicationsByApplicant($pdo, $applicantId) {    
     $sql = "SELECT ja.*, jp.jobTitle, jp.university, jp.course, u.firstName, u.lastName
             FROM job_application ja
@@ -62,6 +51,7 @@ function getJobApplicationsByApplicant($pdo, $applicantId) {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+// Get all applications for a specific job post
 function getApplicationsSpecificJobPost($pdo, $jobPostId) {
     $sql = "SELECT * FROM job_application WHERE jobPostId = :jobPostId";
     $stmt = $pdo->prepare($sql);
@@ -91,31 +81,34 @@ function getApplicantsForJobPost($pdo, $jobPostId) {
     }
 
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}   
-
-function getSingleJobApplication($pdo, $applicationId) {
-        $sql = "SELECT * FROM job_application WHERE applicationId = :applicationId";
-        $stmt = $pdo->prepare($sql);
-        $stmt->bindParam(':applicationId', $applicationId, PDO::PARAM_INT);
-        $result = $stmt->execute();
-    
-        if (!$result) {
-            throw new Exception("Failed to retrieve the job application");
-        }
-
-        return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
-function getApplicationByUuid($pdo, $uuid) {
-    if (!isValidUuid($uuid)) {
-        return false;
+// Get single job application by application ID
+function getSingleJobApplication($pdo, $applicationId) {
+    $sql = "SELECT * FROM job_application WHERE applicationId = :applicationId";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':applicationId', $applicationId, PDO::PARAM_INT);
+    $result = $stmt->execute();
+
+    if (!$result) {
+        throw new Exception("Failed to retrieve the job application");
     }
-    
-    $sql = "SELECT ja.*, jp.jobTitle, jp.university, jp.course, jp.deadlineDate,
-                   u.firstName, u.lastName
+
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+// Get job application by UUID with applicant and employer details
+function getApplicationByUuid($pdo, $uuid) {
+    $sql = "SELECT ja.*, jp.jobTitle, jp.university, jp.course, jp.deadlineDate, jp.employerId,
+                   employer.firstName AS employerFirstName, 
+                   employer.lastName AS employerLastName,
+                   applicant.firstName AS applicantFirstName, 
+                   applicant.lastName AS applicantLastName,
+                   applicant.email AS applicantEmail
             FROM job_application ja
             JOIN job_post jp ON ja.jobPostId = jp.postId
-            JOIN user u ON jp.employerId = u.userId
+            JOIN user employer ON jp.employerId = employer.userId
+            JOIN user applicant ON ja.applicantId = applicant.userId
             WHERE ja.uuid = :uuid";
     $query = $pdo->prepare($sql);
     $query->bindParam(':uuid', $uuid, PDO::PARAM_STR);
@@ -128,19 +121,6 @@ function getApplicationByUuid($pdo, $uuid) {
     return $query->fetch(PDO::FETCH_ASSOC);
 }
 
-function deleteJobApplication($pdo, $applicationId) {
-    $sql = "DELETE FROM job_application WHERE applicationId = :applicationId";
-    $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':applicationId', $applicationId, PDO::PARAM_INT);
-
-    $result = $stmt->execute();
-
-    if (!$result) {
-        throw new Exception("Failed to delete job application");
-    }
-    return true;
-}
-
 // Check if user has already applied to a specific job
 function hasUserAppliedToJob($pdo, $applicantId, $jobPostId) {
     $sql = "SELECT COUNT(*) as count 
@@ -150,12 +130,43 @@ function hasUserAppliedToJob($pdo, $applicantId, $jobPostId) {
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':applicantId', $applicantId, PDO::PARAM_INT);
     $stmt->bindParam(':jobPostId', $jobPostId, PDO::PARAM_INT);
-    $stmt->execute();
+    $result = $stmt->execute();
     
-    $result = $stmt->fetch(PDO::FETCH_ASSOC);
-    return $result['count'] > 0;
-
     if (!$result) {
         throw new Exception("Failed to check if user has applied to job");
     }
+    
+    $data = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $data['count'] > 0;
+}
+
+// -- UPDATE --
+// Update the status of a job application
+function updateJobApplicationStatus($pdo, $applicationId, $newStatus) {
+    $sql = "UPDATE job_application SET status = :status WHERE applicationId = :applicationId";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':status', $newStatus, PDO::PARAM_STR);
+    $stmt->bindParam(':applicationId', $applicationId, PDO::PARAM_INT);
+    
+    $result = $stmt->execute(); // returns boolean
+
+    if (!$result) {
+        throw new Exception("Failed to update job application status");
+    }
+    return true;
+}
+
+// -- DELETE --
+// Delete a job application by application ID
+function deleteJobApplication($pdo, $applicationId) {
+    $sql = "DELETE FROM job_application WHERE applicationId = :applicationId";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':applicationId', $applicationId, PDO::PARAM_INT);
+
+    $result = $stmt->execute(); // returns boolean
+
+    if (!$result) {
+        throw new Exception("Failed to delete job application");
+    }
+    return true;
 }

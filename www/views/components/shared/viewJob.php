@@ -149,7 +149,7 @@
                     <a href="?page=availableJobs">Back to Browse</a>
                 <?php else: ?>
                     <!-- Fallback -->
-                    <a href="?page=overview">Back to Dashboard</a>
+                    <a href="?page=myProfile">Back to My Profile</a>
                 <?php endif; ?>
             </div>
         <?php endif; ?>

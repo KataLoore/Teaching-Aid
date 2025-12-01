@@ -2,12 +2,13 @@
 /**
  * The userSql.php file contains functions with SQL to enable CRUD actions
  * in the user table in the database. 
- * 
- * @see user.php 
  */
 
+// -- CREATE --
+// Create a new user record
 function createUser($pdo, $newUser) {
-    $sql = "INSERT INTO user (firstName, lastName, username, email, password, userType) VALUES (:firstName, :lastName, :username, :email, :password, :userType)";
+    $sql = "INSERT INTO user (firstName, lastName, username, email, password, userType) 
+            VALUES (:firstName, :lastName, :username, :email, :password, :userType)";
     
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':firstName', $newUser['firstName'], PDO::PARAM_STR);
@@ -17,21 +18,40 @@ function createUser($pdo, $newUser) {
     $stmt->bindParam(':password', $newUser['password'], PDO::PARAM_STR);
     $stmt->bindParam(':userType', $newUser['userType'], PDO::PARAM_STR);
     
-    $result = $stmt->execute();
+    $result = $stmt->execute(); // returns boolean
     
     if (!$result) {
         throw new Exception("Failed to create user");
     }
     return true;
 }
+
+// -- RETRIEVE --
+// Get user information by user ID
+function getUserById($pdo, $userId) {
+    $sql = "SELECT userId, firstName, lastName, username, email, userType 
+            FROM user WHERE userId = :userId";
     
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+    $result = $stmt->execute();
+    
+    if (!$result) {
+        throw new Exception("Failed to retrieve user");
+    }
+    
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+// -- UPDATE --
+// Update user profile information
 function updateUser($pdo, $userUpdates) {
     $sql = "UPDATE user SET 
                 firstName = :firstName,
                 lastName = :lastName,
                 username = :username,
                 email = :email,
-                password = :password,
+                password = :password
             WHERE userId = :userId";
     
     $stmt = $pdo->prepare($sql);
@@ -41,47 +61,47 @@ function updateUser($pdo, $userUpdates) {
     $stmt->bindParam(':email', $userUpdates['email'], PDO::PARAM_STR);
     $stmt->bindParam(':password', $userUpdates['password'], PDO::PARAM_STR);
     $stmt->bindParam(':userId', $userUpdates['userId'], PDO::PARAM_INT);
-    $result = $stmt->execute();
     
-    if(!$result) {
+    $result = $stmt->execute(); // returns boolean
+    
+    if (!$result) {
         throw new Exception("Failed to update user");
     }
 
     return true; 
-
 }
 
+// Change user role (applicant/employer)
 function changeUserRole($pdo, $userId, $newRole) {
     $sql = "UPDATE user SET userType = :userType WHERE userId = :userId";
+    
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':userType', $newRole, PDO::PARAM_STR);
-    $stmt->bindParam(':userId', $userId, PDO::PARAM_STR);
-    $result = $stmt->execute();
+    $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+    
+    $result = $stmt->execute(); // returns boolean
 
-    if(!$result) {
+    if (!$result) {
         throw new Exception("Failed to change user role");
     }
     return true;
 }
 
-
-function getUserById($pdo, $userId) {
-    $sql = "SELECT userId, firstName, lastName, username, email, userType 
-            FROM user WHERE userId = :userId";
-    
-    $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
-    $stmt->execute();
-    
-    return $stmt->fetch(PDO::FETCH_ASSOC);
-}
-
-
+// -- DELETE --
+// Delete a user by user ID
 function deleteUser($pdo, $userId) {
     $sql = "DELETE FROM user WHERE userId = :userId";
+    
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
-    $stmt->execute();
+    
+    $result = $stmt->execute(); // returns boolean
+    
+    if (!$result) {
+        throw new Exception("Failed to delete user");
+    }
+    
+    return true;
 }
 
 ?>

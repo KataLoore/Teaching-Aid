@@ -23,8 +23,16 @@ $jobPosts = [];
 try {
   require_once('../../assets/inc/database/jobPostSql.php');
 
-    // Fetch all open job posts
-     $jobPosts = getAllJobs($pdo);
+    // Fetch all open job posts excluding user's own jobs
+     $allJobs = getAllJobs($pdo);
+     
+     // Filter out jobs posted by the current user
+     $jobPosts = [];
+     foreach ($allJobs as $job) {
+         if ($job['employerId'] !== $_SESSION['user']['userId']) {
+             $jobPosts[] = $job;
+         }
+     }
 
 } catch (Exception $e) {
     error_log("Error retrieving job posts: " . $e->getMessage());
