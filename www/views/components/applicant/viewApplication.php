@@ -6,7 +6,7 @@
 if(!isset($_SESSION['user']['loggedIn']) || $_SESSION['user']['loggedIn']!==True)  {
     echo "<script>
             alert('Please log in to access this content.');
-            window.location.href = '../../index.php';
+            window.location.href = '../../logIn.php';
         </script>";
     exit();
 }
@@ -15,6 +15,8 @@ require_once('../../assets/inc/database/db.php');
 require_once('../../assets/inc/database/jobApplicationSql.php');
 require_once('../../assets/inc/database/jobPostSql.php');
 require_once('../../assets/inc/functions.php');
+require_once('../../assets/inc/database/jobPostSql.php');
+
 
 $message = "";
 $application = null;
@@ -94,5 +96,6 @@ if (!isValidUuid($uuid)) {
             </div>
             <?php endif; ?>
     </div>
+    
 </body>
 </html>

@@ -4,7 +4,7 @@
     if(!isset($_SESSION['user']['loggedIn']) || $_SESSION['user']['loggedIn']!==True) {
         echo "<script>
                 alert('Please log in to access this content.');
-                window.location.href = 'index.php';
+                window.location.href = 'logIn.php';
               </script>";
         exit();
     }
@@ -24,9 +24,9 @@
         ]);
     } elseif($_SESSION['user']['userType'] === 'applicant') { 
         $pages = array_merge($pages, [ // add applicant pages
+            'availableJobs' => 'Browse Jobs',
             'createApplication' => 'Create Application',
             'myApplications' => 'My Applications',
-            'availableJobs' => 'Browse Jobs',
         ]);
     }
 
@@ -69,6 +69,10 @@
                 case 'overview':
                     include 'components/shared/overview.php';
                     break;
+
+                case 'profile':
+                    include 'components/shared/viewProfile.php';
+                    break;
                     
                 case 'postJob':
                     include 'components/employer/createJobPost.php';
@@ -88,10 +92,6 @@
                     
                 case 'createApplication':
                     include 'components/applicant/createApplication.php';
-                    break;
-                    
-                case 'profile':
-                    include 'components/shared/editProfile.php';
                     break;
                     
                 case 'settings':

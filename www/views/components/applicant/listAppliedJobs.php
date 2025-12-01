@@ -6,7 +6,7 @@
 if(!isset($_SESSION['user']['loggedIn']) || $_SESSION['user']['loggedIn']!==True) {
     echo "<script>
             alert('Please log in to access this content.');
-            window.location.href = '../../index.php';
+            window.location.href = '../../logIn.php';
           </script>";
     exit();
 } elseif ($_SESSION['user']['userType'] !== 'applicant') {
