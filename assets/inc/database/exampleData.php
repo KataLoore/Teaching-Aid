@@ -1,8 +1,8 @@
 <?php
 /**
- * Example Data Script
- * This file inserts sample data into all database tables when included.
- * Run this script to populate the database with test data for development/testing.
+ * Sample data insertion script that populates database tables with realistic test data for development and testing.
+ * Creates sample users (employers and applicants), job postings, and applications with proper relationships and realistic content.
+ * Dependencies: db.php for database connection and existing database tables created by initDb.php.
  */
 
 require_once("db.php");

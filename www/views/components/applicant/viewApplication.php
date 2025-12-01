@@ -1,8 +1,10 @@
 <?php
 /**
- * The viewApplication  displays full details of a single job application
- * Works for both applicants (viewing their own application) and employer (viewing applications to choose candidate for a job) 
- */
+ * Detailed view of a specific job application showing all application information and current status.
+ * Allows applicants to review their submitted application details including cover letter and job information.
+ * Dependencies: jobApplicationSql.php for retrieving application data and ensuring user owns the application being viewed.
+ */ 
+
 if(!isset($_SESSION['user']['loggedIn']) || $_SESSION['user']['loggedIn']!==True)  {
     echo "<script>
             alert('Please log in to access this content.');

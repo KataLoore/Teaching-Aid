@@ -1,5 +1,10 @@
 <?php
 /**
+ * User profile display page showing current user information and account details.
+ * Presents user data in a read-only format with links to settings for profile modifications.
+ * Dependencies: Session data for user information display - no external database queries required for basic profile view.
+ */
+/**
  * View Profile Component
  * 
  */

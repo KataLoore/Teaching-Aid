@@ -1,6 +1,8 @@
 <?php
 /**
- * The initDb.php file contains sql statements to create all of the tables in the db.
+ * Database initialization script that creates all required tables for the Teaching-Aid application.
+ * Defines table schemas for users, job postings, and applications with proper relationships and constraints.
+ * Dependencies: db.php for database connection - must be run before any other database operations.
  */
 require_once("db.php");
         
