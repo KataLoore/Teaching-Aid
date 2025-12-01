@@ -168,17 +168,53 @@ function deleteJobPost($pdo, $uuid, $employerId) {
         return false;
     }
     
-    $sql = "DELETE FROM job_post WHERE uuid = :uuid AND employerId = :employerId";
-    $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':uuid', $uuid, PDO::PARAM_STR);
-    $stmt->bindParam(':employerId', $employerId, PDO::PARAM_INT);
-    
-    $result = $stmt->execute();
-    
-    if (!$result) {
-        throw new Exception("Failed to delete job post");
+    try {
+        // Start transaction for cascading deletions
+        $pdo->beginTransaction();
+        
+        // First get the job post ID to delete related applications
+        $sql = "SELECT postId FROM job_post WHERE uuid = :uuid AND employerId = :employerId";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':uuid', $uuid, PDO::PARAM_STR);
+        $stmt->bindParam(':employerId', $employerId, PDO::PARAM_INT);
+        $result = $stmt->execute();
+        
+        if (!$result) {
+            throw new Exception("Failed to retrieve job post for deletion");
+        }
+        
+        $jobPost = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$jobPost) {
+            $pdo->rollback();
+            return false; // Job post not found or doesn't belong to employer
+        }
+        
+        // Delete all job applications for this job post
+        $sql = "DELETE FROM job_application WHERE jobPostId = :jobPostId";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':jobPostId', $jobPost['postId'], PDO::PARAM_INT);
+        $stmt->execute();
+        
+        // Finally delete the job post
+        $sql = "DELETE FROM job_post WHERE uuid = :uuid AND employerId = :employerId";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':uuid', $uuid, PDO::PARAM_STR);
+        $stmt->bindParam(':employerId', $employerId, PDO::PARAM_INT);
+        
+        $result = $stmt->execute();
+        
+        if (!$result) {
+            throw new Exception("Failed to delete job post");
+        }
+        
+        // Commit transaction
+        $pdo->commit();
+        return true;
+        
+    } catch (Exception $e) {
+        // Rollback transaction on error
+        $pdo->rollback();
+        throw new Exception("Failed to delete job post and dependencies: " . $e->getMessage());
     }
-    
-    return true;
 }
 ?>
