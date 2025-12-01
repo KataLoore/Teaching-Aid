@@ -146,7 +146,7 @@
                     <a href="?page=myJobs">Back to List</a>
                 <?php elseif ($userType === 'applicant' && $job['status'] === 'open'): ?>
                     <!-- Applicant actions -->
-                    <a href="?page=applyForJob&id=<?= htmlspecialchars($job['uuid']) ?>">Apply for This Job</a>
+                    <a href="?page=createApplication&uuid=<?= htmlspecialchars($job['uuid']) ?>">Apply for This Job</a>
                     <a href="?page=availableJobs">Back to Browse</a>
                 <?php else: ?>
                     <!-- Fallback -->
