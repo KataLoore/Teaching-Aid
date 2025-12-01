@@ -5,6 +5,7 @@
 */
 
 require_once("db.php");
+require_once(__DIR__ . "/../functions.php");
 
 function createJobApplication($pdo, $jobApplicationData) {
     $uuid = generateUuid();
@@ -13,7 +14,7 @@ function createJobApplication($pdo, $jobApplicationData) {
             VALUES (:uuid, :applicantId, :jobPostId, :coverLetter, :status, :submitDate)";
 
     $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':uuid', $uuid, PDO::PARAM_STR); // <-- Bind UUID
+    $stmt->bindParam(':uuid', $uuid, PDO::PARAM_STR); 
     $stmt->bindParam(':applicantId', $jobApplicationData['applicantId'], PDO::PARAM_INT);
     $stmt->bindParam(':jobPostId', $jobApplicationData['jobPostId'], PDO::PARAM_INT);
     $stmt->bindParam(':coverLetter', $jobApplicationData['coverLetter'], PDO::PARAM_STR);

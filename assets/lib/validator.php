@@ -236,7 +236,7 @@ class Validator {
 
     // Validate that user is not applying to their own job 
     public function validateNotOwnJob($pdo, $jobPostId, $userId) {
-        require_once __DIR__ . '/../inc/database/jobPostSql.php';
+      require_once __DIR__ . '/../inc/database/jobPostSql.php';
         
         $jobPost = getJobPostById($pdo, $jobPostId);
         
