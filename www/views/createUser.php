@@ -1,9 +1,8 @@
 <?php
-/*
-* The createUser view processes form data for user registration.
-* Input data is sanitized, validated and tested for errors. 
-* Additional functionality has been added to improve UX ($registrationData 
-* ensures only invalid fields are cleared in case of field validation errors)
+/**
+ * User registration page that allows new users to create employer or applicant accounts.
+ * Validates form input, sanitizes data, and creates new user records in the database with hashed passwords.
+ * Dependencies: initDb.php, validator.php, userSql.php, and functions.php for database operations and validation.
 *
 * The user-creation process utilises two-layer error handling:
 *   - Layer 1: Handles expected user errors through validator objects

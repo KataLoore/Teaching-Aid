@@ -1,6 +1,8 @@
 <?php
 /**
- * List all job applications submitted by the current applicant
+ * Displays a list of job applications submitted by the currently logged-in applicant.
+ * Shows application status, job details, and submission dates in a tabular format for easy tracking.
+ * Dependencies: jobApplicationSql.php for retrieving user-specific application data from the database.
  */
 
 if(!isset($_SESSION['user']['loggedIn']) || $_SESSION['user']['loggedIn']!==True) {

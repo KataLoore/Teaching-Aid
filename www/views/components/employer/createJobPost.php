@@ -1,7 +1,9 @@
 <?php
-/*
-* The createJobPost view processes form data for job post creation.
-*/
+/**
+ * Job posting creation form for employers to create new teaching assistant position listings.
+ * Validates job posting data including workload, deadlines, and course information before saving to database.
+ * Dependencies: validator.php, jobPostSql.php, and functions.php for form validation and database operations.
+ */
 
 if(!isset($_SESSION['user']['loggedIn']) || $_SESSION['user']['loggedIn']!==True)  {
         echo "<script>

@@ -1,4 +1,10 @@
 <?php
+/**
+ * Main login page for the Teaching-Aid application.
+ * Handles user authentication by validating credentials against the database and establishing user sessions.
+ * Dependencies: initDb.php, exampleData.php, functions.php for database initialization and form processing.
+ */
+
     // initialize db tables
     require_once('../assets/inc/database/initDb.php');
     require_once('../assets/inc/database/exampleData.php');

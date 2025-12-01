@@ -1,7 +1,8 @@
-<?php 
+<?php
 /**
- * In settings.php, users can update their account settings, delete their account, and change user roles.
- * 
+ * User account settings page allowing users to update their profile information and account preferences.
+ * Provides forms for modifying user details while maintaining data validation and security checks.
+ * Dependencies: userSql.php, validator.php, and functions.php for user data management and form validation.
  */
 
 require_once('../../assets/inc/database/db.php');

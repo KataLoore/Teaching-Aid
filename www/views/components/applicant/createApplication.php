@@ -1,7 +1,9 @@
 <?php
-/*
-* The createApplication view processes form data for job application creation.
-*/
+/**
+ * Job application submission form for applicants to apply to available teaching assistant positions.
+ * Validates application data, prevents duplicate applications, and ensures applicants cannot apply to their own job posts.
+ * Dependencies: validator.php, jobApplicationSql.php, and functions.php for form validation and database operations.
+ */
 
 if(!isset($_SESSION['user']['loggedIn']) || $_SESSION['user']['loggedIn']!==True) {
     echo "<script>
@@ -77,38 +79,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['createApplication'])) 
     <link rel="stylesheet" href="../../../../assets/css/style.css">
 </head>
 <body>
-    <div>
-        <h1>Submit Job Application</h1>
+    <p><br><a href="?page=availableJobs">← Back to Available Jobs</a></p>
+    <div class="form-container">
+        <h1 style="text-align: center;">Submit Job Application</h1>
         
         <form method="POST" action="">
             <div>
-                <label for="jobPostId">
-                    Job Post ID <abbr title="The ID of the job you're applying for">?</abbr>
-                </label><br>
-                <input type="number" 
-                       id="jobPostId" 
-                       name="jobPostId" 
-                       value="<?= preserveFormValue($formData, 'jobPostId') ?: htmlspecialchars($prefilledJobId) ?>" 
-                       required>
+                Job Post ID <abbr title="The ID of the job you're applying for">?</abbr> <input type="number" name="jobPostId" value="<?= preserveFormValue($formData, 'jobPostId') ?: htmlspecialchars($prefilledJobId) ?>" required>
             </div>
 
             <div>
-                <label for="coverLetter">
-                    Cover Letter <abbr title="Explain why you're qualified for this position">?</abbr>
-                </label><br>
-                <textarea id="coverLetter" 
-                          name="coverLetter" 
-                          rows="10" 
-                          placeholder="Minimum 50 characters, maximum 5000 characters" 
-                          required><?= preserveFormValue($formData, 'coverLetter') ?></textarea>
+                Cover Letter <abbr title="Explain why you're qualified for this position">?</abbr><br>
+                <textarea name="coverLetter" rows="8" placeholder="Explain why you're qualified for this position" required><?= preserveFormValue($formData, 'coverLetter') ?></textarea>
             </div>
 
             <div>
-                <button type="reset">Clear</button>
                 <button type="submit" name="createApplication">Submit Application</button>
             </div>
         </form>
-
         <div>
             <?php 
             if (!empty($messages)) {
@@ -119,8 +107,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['createApplication'])) 
             ?>
         </div>
         
-        <br>
-        <a href="?page=availableJobs">← Back to Available Jobs</a>
     </div>
 </body>
 </html>

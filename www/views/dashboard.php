@@ -1,4 +1,10 @@
 <?php
+/**
+ * Main dashboard interface that dynamically loads different components based on user type and navigation.
+ * Provides role-based access control and serves as the central hub for employer and applicant functionality.
+ * Dependencies: Session management and various component files in the applicant/, employer/, and shared/ directories.
+ */
+
     // --- Login Session Check ---
     session_start();
     if(!isset($_SESSION['user']['loggedIn']) || $_SESSION['user']['loggedIn']!==True) {

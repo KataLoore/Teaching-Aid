@@ -1,7 +1,8 @@
 <?php
 /**
- * List all available job posts for applicants to browse
- * 
+ * Displays all available (open status) teaching assistant job postings for applicants to browse.
+ * Shows job details including title, university, workload, and application deadlines in a searchable table format.
+ * Dependencies: jobPostSql.php for retrieving open job postings and filtering by availability status.
  */
 
 if(!isset($_SESSION['user']['loggedIn']) || $_SESSION['user']['loggedIn']!==True) {

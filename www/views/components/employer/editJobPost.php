@@ -1,7 +1,8 @@
 <?php
 /**
- * The editJobPost view processes form data for job post updates.
- * Only accessible by the employer who created the job post.
+ * Job posting editing interface that allows employers to modify their existing job listings.
+ * Includes ownership verification to ensure only the original poster can edit their job postings.
+ * Dependencies: validator.php, jobPostSql.php, and functions.php for form validation, ownership checks, and database updates.
  */
 
 if(!isset($_SESSION['user']['loggedIn']) || $_SESSION['user']['loggedIn']!==True)  {
