@@ -1,6 +1,13 @@
 # Teaching-Aid
 
+## University Teaching Assistant Management System
+
 A web-based platform for managing teaching assistant job postings and applications at universities. The system connects employers (faculty/departments) with potential teaching assistants through a streamlined job posting and application process.
+
+**Developers:**
+
+- Kata-Loore Tamm
+- Stine Strand
 
 ## Features
 
