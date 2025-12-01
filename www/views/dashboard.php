@@ -40,10 +40,8 @@
     $requestedPage = $_GET['page'] ?? 'overview';
     
     // Define valid pages (including hidden ones like viewJob)
-    $validPages = array_merge(array_keys($pages), ['viewJob', 'editJob', 'viewApplication']); 
-    $currentPage = in_array($requestedPage, $validPages) ? $requestedPage : 'overview';
-    
-    // Set page title (use a default for hidden pages)
+    $validPages = array_merge(array_keys($pages), ['viewJob', 'editJob', 'viewApplication', 'viewPublicProfile']);
+    $currentPage = in_array($requestedPage, $validPages) ? $requestedPage : 'overview';    // Set page title (use a default for hidden pages)
     $currentPageTitle = $pages[$currentPage] ?? 'View Details';
 
 ?>
@@ -110,12 +108,17 @@
                     break;
 
                 case 'editJob':
-                    include 'views/employer/editJob.php';
+                    include 'components/employer/editJobPost.php';
                     break;
                 
                     // -- sub-view for JobApplication (accessed through views) --
                 case 'viewApplication':
                     include __DIR__ . '/components/applicant/viewApplication.php';
+                    break;
+
+                // -- sub-view for Public Profile (accessed through views) --
+                case 'viewPublicProfile':
+                    include 'components/shared/viewPublicProfile.php';
                     break;
 
               
