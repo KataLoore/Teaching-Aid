@@ -72,6 +72,24 @@ function getApplicationsSpecificJobPost($pdo, $jobPostId) {
     }
 
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+// Get applicants with user details for a specific job post
+function getApplicantsForJobPost($pdo, $jobPostId) {
+    $sql = "SELECT job_application.*, user.firstName, user.lastName, user.email
+            FROM job_application
+            JOIN user ON job_application.applicantId = user.userId
+            WHERE job_application.jobPostId = :jobPostId
+            ORDER BY job_application.submitDate DESC";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':jobPostId', $jobPostId, PDO::PARAM_INT);
+    $result = $stmt->execute();
+
+    if (!$result) {
+        throw new Exception("Failed to retrieve applicants for job post");
+    }
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }   
 
 function getSingleJobApplication($pdo, $applicationId) {

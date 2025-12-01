@@ -83,13 +83,27 @@ function getJobPostByUuid($pdo, $uuid) {
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
+// get job post by uuid with employer verification
+function getJobPostByUuidForEmployer($pdo, $uuid, $employerId) {
+    // Validate UUID format first
+    if (!isValidUuid($uuid)) {
+        return false;
+    }
+    
+    $sql = "SELECT * FROM job_post WHERE uuid = :uuid AND employerId = :employerId";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':uuid', $uuid, PDO::PARAM_STR);
+    $stmt->bindParam(':employerId', $employerId, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
 // get all jobs and employer names for displaying to applicants
 function getAllJobs($pdo) {
     $sql = "SELECT jp.*, u.firstName, u.lastName 
             FROM job_post jp
             JOIN user u ON jp.employerId = u.userId
             ORDER BY jp.publicationDate DESC";
-    $stmt = $pdo->prepare($sql);
     $stmt = $pdo->prepare($sql);
     $result = $stmt->execute();
     if (!$result) {
@@ -140,5 +154,24 @@ function updateJobPost($pdo, $jobPostData) {
 }
 
 // -- DELETE --
+// Delete a job post by UUID and employer ID 
+function deleteJobPost($pdo, $uuid, $employerId) {
+    if (!isValidUuid($uuid)) {
+        return false;
+    }
+    
+    $sql = "DELETE FROM job_post WHERE uuid = :uuid AND employerId = :employerId";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':uuid', $uuid, PDO::PARAM_STR);
+    $stmt->bindParam(':employerId', $employerId, PDO::PARAM_INT);
+    
+    $result = $stmt->execute();
+    
+    if (!$result) {
+        throw new Exception("Failed to delete job post");
+    }
+    
+    return true;
+}
 
 ?>
