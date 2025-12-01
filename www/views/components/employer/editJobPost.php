@@ -108,94 +108,69 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['updateJobPost']) && $i
     <link rel="stylesheet" href="../../../assets/css/style.css">
 </head>
 <body>
-    <div>
-        <a href="?page=myJobs">← Back to Job List</a>
+<a href="?page=myJobs">← Back to Job List</a>
+    <div class="form-container">
         
-        <?php if (!empty($messages)): ?>
-            <div>
-                <?php foreach ($messages as $msg): ?>
-                    <p><?= htmlspecialchars($msg) ?></p>
-                <?php endforeach; ?>
-            </div>
-        <?php endif; ?>
+        <h1 style="text-align: center;">Edit Job Post</h1>
         
         <?php if ($job && $isOwner): ?>
-            <h1>Edit Job Post</h1>
             
             <form method="POST" action="">
-                <div>
-                    <label for="jobTitle">
-                        Job Title <abbr title="The title of the job posting.">?</abbr>
-                    </label><br>
-                    <input type="text" name="jobTitle" value="<?= htmlspecialchars($job['jobTitle']) ?>" required>
-                </div>
+            <div>
+                Job Title <abbr title="The title of the job posting.">?</abbr> <input type="text" name="jobTitle" value="<?= htmlspecialchars($job['jobTitle']) ?>" required>
+            </div>
 
-                <div>
-                    <label for="jobDescription">
-                        Job Description <abbr title="A short summary of what the job involves.">?</abbr>
-                    </label><br>
-                    <textarea name="jobDescription" required><?= htmlspecialchars($job['jobDescription']) ?></textarea>
-                </div>
+            <div>
+                Job Description <abbr title="A short summary of what the job involves.">?</abbr> <input type="text" name="jobDescription" value="<?= htmlspecialchars($job['jobDescription']) ?>" required>
+            </div>
 
-                <div>
-                    <label for="university">
-                        University <abbr title="Select the university associated with this job.">?</abbr>
-                    </label><br>
-                    <select name="university" required>
-                        <option value="uia" <?= $job['university'] === 'uia' ? 'selected' : '' ?>>University of Agder (UiA)</option>
-                    </select>
-                </div>
+            <div>
+                University <abbr title="Select the university associated with this job.">?</abbr> <select name="university" required>
+                    <option value="uia" <?= $job['university'] === 'uia' ? 'selected' : '' ?>>University of Agder (UiA)</option>
+                </select>
+            </div>
 
-                <div>
-                    <label for="faculty">
-                        Faculty <abbr title="The faculty or department offering the job.">?</abbr>
-                    </label><br>
-                    <input type="text" name="faculty" value="<?= htmlspecialchars($job['faculty']) ?>" required>
-                </div>
+            <div>
+                Faculty <abbr title="The faculty or department offering the job.">?</abbr> <input type="text" name="faculty" value="<?= htmlspecialchars($job['faculty']) ?>" required>
+            </div>
 
-                <div>
-                    <label for="course">
-                        Course <abbr title="The relevant course for this position.">?</abbr>
-                    </label><br>
-                    <input type="text" name="course" value="<?= htmlspecialchars($job['course']) ?>" required>
-                </div>
+            <div>
+                Course <abbr title="The relevant course for this position.">?</abbr> <input type="text" name="course" value="<?= htmlspecialchars($job['course']) ?>" required>
+            </div>
 
-                <div>
-                    <label for="language">
-                        Language <abbr title="The required working language for this job.">?</abbr>
-                    </label><br>
-                    <select name="language" required>
-                        <option value="en" <?= $job['language'] === 'en' ? 'selected' : '' ?>>English</option>
-                        <option value="no" <?= $job['language'] === 'no' ? 'selected' : '' ?>>Norwegian</option>
-                    </select>
-                </div>
+            <div>
+                Language <abbr title="The required working language for this job.">?</abbr> <select name="language" required>
+                    <option value="en" <?= $job['language'] === 'en' ? 'selected' : '' ?>>English</option>
+                    <option value="no" <?= $job['language'] === 'no' ? 'selected' : '' ?>>Norwegian</option>
+                </select>
+            </div>
 
-                <div>
-                    <label for="maxWorkload">
-                        Maximum Workload <abbr title="Total number of hours allowed for this job.">?</abbr>
-                    </label><br>
-                    <input type="text" name="maxWorkload" value="<?= htmlspecialchars($job['maxWorkload']) ?>" required>
-                </div>
+            <div>
+                Maximum Workload <abbr title="Total number of hours allowed for this job.">?</abbr> <input type="text" name="maxWorkload" value="<?= htmlspecialchars($job['maxWorkload']) ?>" required>
+            </div>
 
-                <div>
-                    <label for="weeklyWorkload">
-                        Weekly Workload <abbr title="Expected number of working hours per week.">?</abbr>
-                    </label><br>
-                    <input type="text" name="weeklyWorkload" value="<?= htmlspecialchars($job['weeklyWorkload']) ?>" required>
-                </div>
+            <div>
+                Weekly Workload <abbr title="Expected number of working hours per week.">?</abbr> <input type="text" name="weeklyWorkload" value="<?= htmlspecialchars($job['weeklyWorkload']) ?>" required>
+            </div>
 
-                <div>
-                    <label for="deadlineDate">
-                        Deadline <abbr title="Final date for applications.">?</abbr>
-                    </label><br>
-                    <input type="date" name="deadlineDate" value="<?= htmlspecialchars(date('Y-m-d', strtotime($job['deadlineDate']))) ?>" required>
-                </div>
+            <div>
+                Deadline <abbr title="Final date for applications.">?</abbr> <input type="date" name="deadlineDate" value="<?= htmlspecialchars(date('Y-m-d', strtotime($job['deadlineDate']))) ?>" required>
+            </div>
 
-                <div>
-                    <button type="button" onclick="window.location.href='?page=myJobs'">Cancel</button>
-                    <button type="submit" name="updateJobPost">Update Job Post</button>
-                </div>
-            </form>
+            <div>
+                <button type="button" onclick="window.location.href='?page=myJobs'">Cancel</button>
+                <button type="submit" name="updateJobPost">Update Job Post</button>
+            </div>
+        </form>
+        <div>
+            <?php 
+            if (!empty($messages)) {
+                foreach ($messages as $msg) {
+                    echo htmlspecialchars($msg) . '<br>';
+                }
+            }
+            ?>
+        </div>
         <?php elseif (!$job): ?>
             <p>Job post not found or access denied.</p>
             <a href="?page=myJobs">Back to Job List</a>

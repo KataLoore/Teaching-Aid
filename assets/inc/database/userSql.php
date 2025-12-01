@@ -1,11 +1,9 @@
 <?php
 /**
- * The userSql.php file contains functions with SQL to enable CRUD actions
- * in the user table in the database. 
- * 
- * @see user.php 
+ * The userSql.php file contains functions with SQL to enable CRUD actions in the user table in the database. 
  */
 
+// -- CREATE --
 function createUser($pdo, $newUser) {
     $sql = "INSERT INTO user (firstName, lastName, username, email, password, userType) VALUES (:firstName, :lastName, :username, :email, :password, :userType)";
     
@@ -24,7 +22,24 @@ function createUser($pdo, $newUser) {
     }
     return true;
 }
+
+// -- RETRIEVE --
+function getUserById($pdo, $userId) {
+    $sql = "SELECT userId, firstName, lastName, username, email, userType 
+            FROM user WHERE userId = :userId";
     
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+    $result = $stmt->execute();
+    
+    if(!$result) {
+        throw new Exception("Failed to retrieve user by ID");
+    }
+    
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}    
+
+// -- UPDATE --
 function updateUser($pdo, $userUpdates) {
     $sql = "UPDATE user SET 
                 firstName = :firstName,
@@ -48,7 +63,6 @@ function updateUser($pdo, $userUpdates) {
     }
 
     return true; 
-
 }
 
 function changeUserRole($pdo, $userId, $newRole) {
@@ -64,24 +78,47 @@ function changeUserRole($pdo, $userId, $newRole) {
     return true;
 }
 
-
-function getUserById($pdo, $userId) {
-    $sql = "SELECT userId, firstName, lastName, username, email, userType 
-            FROM user WHERE userId = :userId";
-    
-    $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
-    $stmt->execute();
-    
-    return $stmt->fetch(PDO::FETCH_ASSOC);
-}
-
-
+// -- DELETE --
 function deleteUser($pdo, $userId) {
-    $sql = "DELETE FROM user WHERE userId = :userId";
-    $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
-    $stmt->execute();
+    try {
+        // Start transaction for cascading deletions
+        $pdo->beginTransaction();
+        
+        // Delete job applications first (if user is applicant)
+        $sql = "DELETE FROM job_application WHERE applicantId = :userId";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        // Delete job posts (if user is employer) - this will cascade to applications for those jobs
+        $sql = "DELETE FROM job_application WHERE jobPostId IN (SELECT postId FROM job_post WHERE employerId = :userId)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        $sql = "DELETE FROM job_post WHERE employerId = :userId";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        // Finally delete the user
+        $sql = "DELETE FROM user WHERE userId = :userId";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+        $result = $stmt->execute();
+        
+        if (!$result) {
+            throw new Exception("Failed to delete user");
+        }
+        
+        // Commit transaction
+        $pdo->commit();
+        return true;
+        
+    } catch (Exception $e) {
+        // Rollback transaction on error
+        $pdo->rollback();
+        throw new Exception("Failed to delete user and dependencies: " . $e->getMessage());
+    }
 }
-
 ?>

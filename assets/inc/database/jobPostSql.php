@@ -1,7 +1,6 @@
 <?php
 /**
- * The jobPostSql.php file contains functions with SQL to enable CRUD actions
- * in the job_post table in the database. 
+ * The jobPostSql.php file contains functions with SQL to enable CRUD actions in the job_post table in the database. 
  */
 
 // -- CREATE --
@@ -69,8 +68,7 @@ function getJobPostById($pdo, $postId) {
     return $job; // Returns the job array or false if not found
 }
 
-// get job post by uuid for URL display
-function getJobPostByUuid($pdo, $uuid) {
+function getJobPostByUuid($pdo, $uuid) {// get job post by uuid for URL display
     // Validate UUID format first
     if (!isValidUuid($uuid)) {
         return false;
@@ -79,7 +77,12 @@ function getJobPostByUuid($pdo, $uuid) {
     $sql = "SELECT * FROM job_post WHERE uuid = :uuid";
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':uuid', $uuid, PDO::PARAM_STR);
-    $stmt->execute();
+    $result = $stmt->execute();
+    
+    if (!$result) {
+        throw new Exception("Failed to retrieve job post by UUID");
+    }
+    
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
@@ -94,15 +97,21 @@ function getJobPostByUuidForEmployer($pdo, $uuid, $employerId) {
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':uuid', $uuid, PDO::PARAM_STR);
     $stmt->bindParam(':employerId', $employerId, PDO::PARAM_INT);
-    $stmt->execute();
+    $result = $stmt->execute();
+    
+    if (!$result) {
+        throw new Exception("Failed to retrieve job post by UUID for employer");
+    }
+    
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
-// get all jobs and employer names for displaying to applicants
-function getAllJobs($pdo) {
+// get all available jobs along with employer names for displaying to applicants
+function getAllAvailableJobs($pdo) {
     $sql = "SELECT jp.*, u.firstName, u.lastName 
             FROM job_post jp
             JOIN user u ON jp.employerId = u.userId
+            WHERE jp.status = 'open'
             ORDER BY jp.publicationDate DESC";
     $stmt = $pdo->prepare($sql);
     $result = $stmt->execute();
@@ -113,7 +122,6 @@ function getAllJobs($pdo) {
     $jobs = $stmt->fetchAll(PDO::FETCH_ASSOC);
     return $jobs; // Returns the array of jobs
 }
-
 
 // -- UPDATE --
 // Update an existing job post by post id and employer id
@@ -173,5 +181,4 @@ function deleteJobPost($pdo, $uuid, $employerId) {
     
     return true;
 }
-
 ?>

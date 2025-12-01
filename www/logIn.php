@@ -54,7 +54,9 @@
     <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
-    <div>
+    <div class="form-container">
+        <h1 style="text-align: center;">Login</h1>
+        <p>Login to your Teaching Aid account:<br></p>
         <form method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">
             <div>
                 <label for="username">Username</label>
@@ -72,7 +74,8 @@
         <div>
             <?php if(!empty($message)) { echo htmlspecialchars($message); } ?>
         </div>
-        <a href="views/createUser.php">Register User</a>
+        <p><br>Don't have an account? <a href="views/createUser.php">Register here!</a></p>
+        
     </div>
 </body>
 </html>

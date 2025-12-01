@@ -11,7 +11,7 @@ require_once('../../assets/inc/database/userSql.php');
 if(!isset($_SESSION['user']['loggedIn']) || $_SESSION['user']['loggedIn']!==True) {
     echo "<script>
             alert('Please log in to access this content.');
-            window.location.href = '../../logIn.php';
+            window.location.href = '../../../logIn.php';
         </script>";
     exit();
 }
@@ -22,7 +22,7 @@ $user = getUserById($pdo, $_SESSION['user']['userId']);
 if (!$user) {
     echo "<script>
             alert('User authentication failed. Please log in again.');
-            window.location.href = '../../logIn.php';
+            window.location.href = '../../../logIn.php';
           </script>";
     exit();
 }
@@ -47,20 +47,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['changeRole'])) {
     }
 }
 
-// Delete user account
-/* if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['deleteUser'])){
-    $removeUser = $_POST['deleteUser'];
-
-    if(!in_array($removeUser, ['applicant','employer'])) {
-        try {
-            $deleteUser = deleteUser($pdo, $_SESSION[][], $deleteUser); 
-        } catch  {  
-
-        }
+// Handle user deletion
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['deleteUser'])) {
+    try {
+        deleteUser($pdo, $_SESSION['user']['userId']);
+        session_destroy();
+        echo "<script>alert('Account deleted.'); window.location.href = '/Teaching-Aid/www/logIn.php';</script>";
+        exit();
+    } catch (Exception $e) {
+        $message = "Error deleting account.";
     }
 }
 
-*/
 ?>
 
 <!DOCTYPE html>
@@ -95,14 +93,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['changeRole'])) {
         </form>
 
     <div>
-        <h2>Delete User</h2>
-        <form method="$_POST">
-            <label for=""></label>
-            <select name="" id="" required>
-                <option value="applicant"> </option>
-                <option value="employer"> </option>
-        </select>
-        <button type="submit" name="deleteUser">Delete User</button>
+        <h2>Delete Account</h2>
+        <form method="POST">
+            <button type="submit" name="deleteUser" onclick="return confirm('Are you sure? This will permanently delete your account and all connected data.')">Delete Account</button>
         </form>
     </div>
 

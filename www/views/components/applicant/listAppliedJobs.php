@@ -46,7 +46,7 @@ try {
     
     <?php if (empty($applications)): ?>
         <p>You haven't applied to any positions yet.</p>
-        <a href="?page=listAvailableJobs">Browse Available Jobs</a>
+        <a href="?page=availableJobs">Browse Available Jobs</a>
     <?php else: ?>
         <p>You have submitted <?= count($applications) ?> application(s)</p>
         

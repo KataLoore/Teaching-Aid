@@ -78,7 +78,7 @@
     <link rel="stylesheet" href="../../../assets/css/style.css">
 </head>
 <body>
-    <h1>Posted Jobs</h1>
+    <h1>My Posted Jobs</h1>
     
     <?php if (!empty($message)): ?>
         <p><?= htmlspecialchars($message) ?></p>

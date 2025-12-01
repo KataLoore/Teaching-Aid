@@ -1,7 +1,8 @@
 <?php
 /* 
  * This file contains SQL functions related to job applications.
- * These functions are used to create, update, and retrieve job application data from the database.
+ * These functions are used to create, update, and retrieve job 
+ * application data from the database.
 */
 
 require_once("db.php");
@@ -150,12 +151,12 @@ function hasUserAppliedToJob($pdo, $applicantId, $jobPostId) {
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':applicantId', $applicantId, PDO::PARAM_INT);
     $stmt->bindParam(':jobPostId', $jobPostId, PDO::PARAM_INT);
-    $stmt->execute();
+    $result = $stmt->execute();
     
-    $result = $stmt->fetch(PDO::FETCH_ASSOC);
-    return $result['count'] > 0;
-
     if (!$result) {
         throw new Exception("Failed to check if user has applied to job");
     }
+    
+    $fetchResult = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $fetchResult['count'] > 0;
 }

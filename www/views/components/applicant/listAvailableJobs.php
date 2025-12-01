@@ -16,15 +16,14 @@ if(!isset($_SESSION['user']['loggedIn']) || $_SESSION['user']['loggedIn']!==True
 }
 
 require_once('../../assets/inc/database/db.php');
+require_once('../../assets/inc/database/jobPostSql.php');
 
 $message = "";
 $jobPosts = [];
 
 try {
-  require_once('../../assets/inc/database/jobPostSql.php');
-
     // Fetch all open job posts
-     $jobPosts = getAllJobs($pdo);
+    $jobPosts = getAllAvailableJobs($pdo);
 
 } catch (Exception $e) {
     error_log("Error retrieving job posts: " . $e->getMessage());

@@ -13,7 +13,6 @@
     // Define available pages and their titles: pageKey => pageTitle
 
     $pages = [ // shared pages
-        'overview' => 'Dashboard Overview',
         'profile' => 'My Profile',
     ];
 
@@ -37,11 +36,11 @@
 
     // --- Main Content Display ---
     // Get and validate the requested page
-    $requestedPage = $_GET['page'] ?? 'overview';
+    $requestedPage = $_GET['page'] ?? 'profile';
     
     // Define valid pages (including hidden ones like viewJob)
-    $validPages = array_merge(array_keys($pages), ['viewJob', 'editJob', 'viewApplication', 'viewPublicProfile']);
-    $currentPage = in_array($requestedPage, $validPages) ? $requestedPage : 'overview';    // Set page title (use a default for hidden pages)
+    $validPages = array_merge(array_keys($pages), ['viewJob', 'editJob', 'viewApplication']);
+    $currentPage = in_array($requestedPage, $validPages) ? $requestedPage : 'profile';    // Set page title (use a default for hidden pages)
     $currentPageTitle = $pages[$currentPage] ?? 'View Details';
 
 ?>
@@ -66,10 +65,6 @@
         <?php
             switch ($currentPage) {
                 // -- sidebar links --
-                case 'overview':
-                    include 'components/shared/overview.php';
-                    break;
-
                 case 'profile':
                     include 'components/shared/viewProfile.php';
                     break;
@@ -116,19 +111,13 @@
                     include __DIR__ . '/components/applicant/viewApplication.php';
                     break;
 
-                // -- sub-view for Public Profile (accessed through views) --
-                case 'viewPublicProfile':
-                    include 'components/shared/viewPublicProfile.php';
-                    break;
-
-              
                 // -- fallback -- ****NEEDED ? 
                 default:
                     ?>
                     <div>
                         <h2>Page Not Found</h2>
                         <p>The requested page could not be found.</p>
-                        <a href="?page=overview">Return to Dashboard</a>
+                        <a href="?page=profile">Return to Dashboard</a>
                     </div>
                     <?php
                     break;
