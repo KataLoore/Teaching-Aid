@@ -1,6 +1,8 @@
 <?php
     // initialize db tables
     require_once('../assets/inc/database/initDb.php');
+    require_once('../assets/inc/database/exampleData.php');
+    
     require_once('../assets/inc/functions.php');
     session_start();
     $message; 
