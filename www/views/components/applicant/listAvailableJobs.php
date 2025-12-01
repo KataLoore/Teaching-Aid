@@ -23,8 +23,18 @@ $message = "";
 $jobPosts = [];
 
 try {
-    // Fetch all open job posts
-    $jobPosts = getAllAvailableJobs($pdo);
+  require_once('../../assets/inc/database/jobPostSql.php');
+
+    // Fetch all open job posts excluding user's own jobs
+     $allJobs = getAllAvailableJobs($pdo);
+     
+     // Filter out jobs posted by the current user
+     $jobPosts = [];
+     foreach ($allJobs as $job) {
+         if ($job['employerId'] !== $_SESSION['user']['userId']) {
+             $jobPosts[] = $job;
+         }
+     }
 
 } catch (Exception $e) {
     error_log("Error retrieving job posts: " . $e->getMessage());
@@ -75,7 +85,7 @@ try {
                         <td><?= htmlspecialchars(date('Y-m-d', strtotime($job['deadlineDate']))) ?></td>
                         <td>
                             <a href="?page=viewJob&uuid=<?= $job['uuid'] ?>">View Details</a> |
-                            <a href="?page=createApplication&jobId=<?= $job['postId'] ?>">Apply</a>
+                            <a href="?page=createApplication&uuid=<?= $job['uuid'] ?>">Apply</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>

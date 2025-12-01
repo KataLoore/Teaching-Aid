@@ -39,8 +39,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['changeRole'])) {
             $changeUserRole = changeUserRole($pdo, $_SESSION['user']['userId'], $newRole);
             $_SESSION['user']['userType'] = $newRole;
 
-
-            $message = "Role changed successfully! Please refresh page, or click on any options in the navbar to the left to activate the change of roles, to see your new options";
+            echo "<script>
+                    alert('Role changed successfully! Feel free to navigate to see your new options');
+                    window.location.href = '?page=profile';
+                  </script>";
+            exit();
         } catch (Exception $e) {
             error_log("Error changing role: " . $e->getMessage());
             $message = "Error changing role.";

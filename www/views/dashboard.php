@@ -30,7 +30,6 @@
     } elseif($_SESSION['user']['userType'] === 'applicant') { 
         $pages = array_merge($pages, [ // add applicant pages
             'availableJobs' => 'Browse Jobs',
-            'createApplication' => 'Create Application',
             'myApplications' => 'My Applications',
         ]);
     }
@@ -45,7 +44,7 @@
     $requestedPage = $_GET['page'] ?? 'profile';
     
     // Define valid pages (including hidden ones like viewJob)
-    $validPages = array_merge(array_keys($pages), ['viewJob', 'editJob', 'viewApplication']);
+    $validPages = array_merge(array_keys($pages), ['viewJob', 'editJob', 'viewApplication', 'createApplication']);
     $currentPage = in_array($requestedPage, $validPages) ? $requestedPage : 'profile';    // Set page title (use a default for hidden pages)
     $currentPageTitle = $pages[$currentPage] ?? 'View Details';
 
@@ -60,7 +59,11 @@
     <link rel="stylesheet" href="../../assets/css/style.css">
 </head>
 <body>
-    <div class="sidebar"> 
+    <div class="sidebar <?= htmlspecialchars($_SESSION['user']['userType']) ?>"> 
+        <div class="logo-container">
+            <img src="../../assets/img/teaching-aid-high-resolution-logo-transparent.png" 
+                alt="Teaching Aid Logo" class="sidebar-logo">
+        </div>
         <?php 
             foreach($pages as $pageKey => $pageTitle) { 
                 echo "<a href=\"?page=" . htmlspecialchars($pageKey) . "\">$pageTitle</a>";
@@ -91,10 +94,6 @@
                     include 'components/applicant/listAvailableJobs.php';
                     break;
                     
-                case 'createApplication':
-                    include 'components/applicant/createApplication.php';
-                    break;
-                    
                 case 'settings':
                     include 'components/shared/settings.php';
                     break;
@@ -115,6 +114,10 @@
                     // -- sub-view for JobApplication (accessed through views) --
                 case 'viewApplication':
                     include __DIR__ . '/components/applicant/viewApplication.php';
+                    break;
+
+                case 'createApplication':
+                    include 'components/applicant/createApplication.php';
                     break;
 
                 // -- fallback -- ****NEEDED ? 

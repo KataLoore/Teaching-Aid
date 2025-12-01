@@ -6,11 +6,10 @@
  */
 
 if(!isset($_SESSION['user']['loggedIn']) || $_SESSION['user']['loggedIn']!==True)  {
-        echo "<script>
+    echo "<script>
                 alert('Please log in to access this content.');
-                window.location.href = 'index.php';
-              </script>";
-        exit();
+                window.location.href = 'logIn.php';
+            </script>";
 } elseif ($_SESSION['user']['userType'] !== 'employer') {
     header("Location: views/dashboard.php");
     exit();
