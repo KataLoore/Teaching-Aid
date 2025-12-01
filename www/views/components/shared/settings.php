@@ -74,29 +74,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['deleteUser'])) {
     <link rel="stylesheet" href="../../../assets/css/style.css">
 </head>
 <body>
-    <h1><?= htmlspecialchars('Name: ' . $_SESSION['user']['firstName'] . ' ' . $_SESSION['user']['lastName']) ?></h1>
-    <p><?= htmlspecialchars('Username: ' . $_SESSION['user']['username']) ?></p>
+    <h1>Profile Information</h1>
     <div>
-        <h2>Profile Information</h2>
-        <p><strong>First Name:</strong> <?= htmlspecialchars($_SESSION['user']['firstName']) ?></p>
-        <p><strong>Last Name:</strong> <?= htmlspecialchars($_SESSION['user']['lastName']) ?></p>
+        <p><strong>Name:</strong> <?= htmlspecialchars(ucfirst($_SESSION['user']['firstName']) . ' ' . ucfirst($_SESSION['user']['lastName'])) ?></p>
         <p><strong>Username:</strong> <?= htmlspecialchars($_SESSION['user']['username']) ?></p>
         <p><strong>Email:</strong> <?= htmlspecialchars($_SESSION['user']['email']) ?></p>
-        <p><strong>Current Role:</strong> <?= htmlspecialchars(ucfirst($_SESSION['user']['userType'])) ?></p>
+        <p><strong>Current Role:</strong> <?= htmlspecialchars(ucfirst($_SESSION['user']['userType'])) ?></p><br>
     </div>
     
     <div>
-        <h2>Change Role</h2>
+        <h2>Update Role</h2>
         <form method="POST">
-            <label for="newRole">New Role:</label>
+            <label for="newRole"></label>
             <select name="newRole" id="newRole" required>
                 <option value="applicant" <?= $_SESSION['user']['userType'] === 'applicant' ? 'selected' : '' ?>>Applicant (Student)</option>
                 <option value="employer" <?= $_SESSION['user']['userType'] === 'employer' ? 'selected' : '' ?>>Employer</option>
             </select>
-            <button type="submit" name="changeRole">Change Role</button>
+            <button type="submit" name="changeRole">Update Role</button>
         </form>
 
-    <div>
+    <div><br>
         <h2>Delete Account</h2>
         <form method="POST">
             <button type="submit" name="deleteUser" onclick="return confirm('Are you sure? This will permanently delete your account and all connected data.')">Delete Account</button>
