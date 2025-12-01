@@ -1,7 +1,8 @@
 <?php
-
 /**
- * Simple helper functions for form processing and error handling
+ * Utility functions library providing common functionality used throughout the Teaching-Aid application.
+ * Contains form input sanitization, validation helpers, UUID generation, and other shared utility methods.
+ * Dependencies: No external dependencies - serves as a foundational utility library for other application components.
  */
 
 // Clean and sanitize form input data

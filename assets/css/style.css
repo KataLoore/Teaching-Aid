@@ -4,6 +4,38 @@ body {
   font-family: "Lato", sans-serif;
 }
 
+.form-container {
+  width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 20px;
+}
+
+.form-container form div {
+  margin-bottom: 10px;
+}
+
+.form-container label {
+  display: block;
+  margin-bottom: 3px;
+}
+
+.form-container input {
+  width: 100%;
+  padding: 5px;
+  box-sizing: border-box;
+}
+
+.form-container textarea {
+  width: 100%;
+  padding: 5px;
+  box-sizing: border-box;
+  resize: vertical;
+  font-family: inherit;
+}
+
+
+
 table, td, th {
   border: 1px solid;
   padding: 10px;
@@ -13,6 +45,7 @@ table {
   border-collapse: collapse;
   margin-left: auto;
   margin-right: auto;
+  margin: 10px;
 }
 
 .sidebar {

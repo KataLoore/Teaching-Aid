@@ -1,7 +1,8 @@
 <?php
 /**
- * List all available job posts for applicants to browse
- * 
+ * Displays all available (open status) teaching assistant job postings for applicants to browse.
+ * Shows job details including title, university, workload, and application deadlines in a searchable table format.
+ * Dependencies: jobPostSql.php for retrieving open job postings and filtering by availability status.
  */
 
 if(!isset($_SESSION['user']['loggedIn']) || $_SESSION['user']['loggedIn']!==True) {
@@ -16,6 +17,7 @@ if(!isset($_SESSION['user']['loggedIn']) || $_SESSION['user']['loggedIn']!==True
 }
 
 require_once('../../assets/inc/database/db.php');
+require_once('../../assets/inc/database/jobPostSql.php');
 
 $message = "";
 $jobPosts = [];
@@ -33,6 +35,8 @@ try {
              $jobPosts[] = $job;
          }
      }
+    // Fetch all open job posts
+    $jobPosts = getAllAvailableJobs($pdo);
 
 } catch (Exception $e) {
     error_log("Error retrieving job posts: " . $e->getMessage());

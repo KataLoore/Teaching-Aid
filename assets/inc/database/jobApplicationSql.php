@@ -1,8 +1,9 @@
 <?php
-/**
- * The jobApplicationSql.php file contains functions with SQL to enable CRUD actions
- * in the job_application table in the database. 
- */
+/* 
+ * This file contains SQL functions related to job applications.
+ * These functions are used to create, update, and retrieve job 
+ * application data from the database.
+*/
 
 require_once("db.php");
 require_once(__DIR__ . "/../functions.php");

@@ -1,6 +1,14 @@
 <?php
+/**
+ * Main login page for the Teaching-Aid application.
+ * Handles user authentication by validating credentials against the database and establishing user sessions.
+ * Dependencies: initDb.php, exampleData.php, functions.php for database initialization and form processing.
+ */
+
     // initialize db tables
     require_once('../assets/inc/database/initDb.php');
+    require_once('../assets/inc/database/exampleData.php');
+    
     require_once('../assets/inc/functions.php');
     session_start();
     $message; 
@@ -54,7 +62,9 @@
     <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
-    <div>
+    <div class="form-container">
+        <h1 style="text-align: center;">Login</h1>
+        <p>Login to your Teaching Aid account:<br></p>
         <form method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">
             <div>
                 <label for="username">Username</label>
@@ -72,7 +82,8 @@
         <div>
             <?php if(!empty($message)) { echo htmlspecialchars($message); } ?>
         </div>
-        <a href="views/createUser.php">Register User</a>
+        <p><br>Don't have an account? <a href="views/createUser.php">Register here!</a></p>
+        
     </div>
 </body>
 </html>

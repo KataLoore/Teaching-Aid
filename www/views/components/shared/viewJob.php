@@ -1,7 +1,8 @@
 <?php
 /**
- * The viewJob view displays full details of a single job post
- * Works for both employers (viewing their own posts) and applicants (viewing jobs to apply for)
+ * Detailed job posting view displaying comprehensive information about a specific teaching assistant position.
+ * Shows job requirements, description, workload details, and provides application links for eligible users.
+ * Dependencies: jobPostSql.php for retrieving job details and user session data for role-based display options.
  */
     if(!isset($_SESSION['user']['loggedIn']) || $_SESSION['user']['loggedIn']!==True)  {
             echo "<script>

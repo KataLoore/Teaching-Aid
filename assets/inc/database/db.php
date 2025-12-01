@@ -7,6 +7,9 @@
 
     try {
         $pdo = new PDO($dsn, DB_USER, DB_PASS);
+        if (!$pdo) {
+            throw new Exception("Failed to connect to database");
+        }
     } catch (PDOException $e) {
         error_log("Database connection error: " . $e->getMessage());
         echo "System error";

@@ -1,4 +1,10 @@
 <?php
+/**
+ * Main dashboard interface that dynamically loads different components based on user type and navigation.
+ * Provides role-based access control and serves as the central hub for employer and applicant functionality.
+ * Dependencies: Session management and various component files in the applicant/, employer/, and shared/ directories.
+ */
+
     // --- Login Session Check ---
     session_start();
     if(!isset($_SESSION['user']['loggedIn']) || $_SESSION['user']['loggedIn']!==True) {
@@ -39,10 +45,8 @@
     $requestedPage = $_GET['page'] ?? 'profile';
     
     // Define valid pages (including hidden ones like viewJob)
-    $validPages = array_merge(array_keys($pages), ['viewJob', 'editJob', 'viewApplication', 'viewPublicProfile']);
-    $currentPage = in_array($requestedPage, $validPages) ? $requestedPage : 'profile';
-    
-    // Set page title (use a default for hidden pages)
+    $validPages = array_merge(array_keys($pages), ['viewJob', 'editJob', 'viewApplication']);
+    $currentPage = in_array($requestedPage, $validPages) ? $requestedPage : 'profile';    // Set page title (use a default for hidden pages)
     $currentPageTitle = $pages[$currentPage] ?? 'View Details';
 
 ?>
@@ -119,19 +123,13 @@
                     include __DIR__ . '/components/applicant/viewApplication.php';
                     break;
 
-                // -- sub-view for Public Profile (accessed through views) --
-                case 'viewPublicProfile':
-                    include 'components/shared/viewPublicProfile.php';
-                    break;
-
-              
                 // -- fallback -- ****NEEDED ? 
                 default:
                     ?>
                     <div>
                         <h2>Page Not Found</h2>
                         <p>The requested page could not be found.</p>
-                        <a href="?page=myProfile">Return to My Profile</a>
+                        <a href="?page=profile">Return to Dashboard</a>
                     </div>
                     <?php
                     break;

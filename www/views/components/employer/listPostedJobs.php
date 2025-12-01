@@ -1,6 +1,8 @@
 <?php
 /**
- * The listPostedJobs view shows all the jobs posted by the current user
+ * Management interface displaying all job postings created by the currently logged-in employer.
+ * Provides edit and delete functionality along with application counts and job status information.
+ * Dependencies: jobPostSql.php for retrieving employer-specific job postings and managing job post operations.
  */
     if(!isset($_SESSION['user']['loggedIn']) || $_SESSION['user']['loggedIn']!==True)  {
             echo "<script>
@@ -78,7 +80,7 @@
     <link rel="stylesheet" href="../../../assets/css/style.css">
 </head>
 <body>
-    <h1>Posted Jobs</h1>
+    <h1>My Posted Jobs</h1>
     
     <?php if (!empty($message)): ?>
         <p><?= htmlspecialchars($message) ?></p>
