@@ -41,12 +41,9 @@ if (!$user) {
     <link rel="stylesheet" href="../../../assets/css/style.css">
 </head>
 <body>
-    <h1><?= htmlspecialchars('Name: ' . $_SESSION['user']['firstName'] . ' ' . $_SESSION['user']['lastName']) ?></h1>
-    <p><?= htmlspecialchars('Username: ' . $_SESSION['user']['username']) ?></p>
+    <h1><?= htmlspecialchars('Name: ' . ucfirst($_SESSION['user']['firstName']) . ' ' . ucfirst($_SESSION['user']['lastName'])) ?></h1>
     <div>
         <h2>Profile Information</h2>
-        <p><strong>First Name:</strong> <?= htmlspecialchars($_SESSION['user']['firstName']) ?></p>
-        <p><strong>Last Name:</strong> <?= htmlspecialchars($_SESSION['user']['lastName']) ?></p>
         <p><strong>Username:</strong> <?= htmlspecialchars($_SESSION['user']['username']) ?></p>
         <p><strong>Email:</strong> <?= htmlspecialchars($_SESSION['user']['email']) ?></p>
         <p><strong>Current Role:</strong> <?= htmlspecialchars(ucfirst($_SESSION['user']['userType'])) ?></p>

@@ -60,7 +60,13 @@
     <link rel="stylesheet" href="../../assets/css/style.css">
 </head>
 <body>
-    <div class="sidebar"> 
+    <div class="sidebar <?= htmlspecialchars($_SESSION['user']['userType']) ?>"> 
+        <div class="logo-container">
+            <a href="?page=profile">
+                <img src="../../assets/img/teaching-aid-high-resolution-logo-transparent.png" 
+                alt="Teaching Aid Logo" class="sidebar-logo">
+            </a>
+        </div>
         <?php 
             foreach($pages as $pageKey => $pageTitle) { 
                 echo "<a href=\"?page=" . htmlspecialchars($pageKey) . "\">$pageTitle</a>";

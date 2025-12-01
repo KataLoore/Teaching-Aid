@@ -23,6 +23,18 @@ $message = "";
 $jobPosts = [];
 
 try {
+  require_once('../../assets/inc/database/jobPostSql.php');
+
+    // Fetch all open job posts excluding user's own jobs
+     $allJobs = getAllJobs($pdo);
+     
+     // Filter out jobs posted by the current user
+     $jobPosts = [];
+     foreach ($allJobs as $job) {
+         if ($job['employerId'] !== $_SESSION['user']['userId']) {
+             $jobPosts[] = $job;
+         }
+     }
     // Fetch all open job posts
     $jobPosts = getAllAvailableJobs($pdo);
 
