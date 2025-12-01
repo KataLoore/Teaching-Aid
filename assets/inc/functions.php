@@ -19,7 +19,7 @@ function displayErrorMessage($errorMessages, $key) {
     }
 }
 
-// Preserve form value after submission (for repopulating forms)
+// Preserve form value after submission (for repopulating forms / after a failed submission)
 function preserveFormValue($formData, $key) {
     if (isset($formData[$key])) {
         return htmlspecialchars($formData[$key]);
